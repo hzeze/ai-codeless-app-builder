@@ -1,1 +1,18 @@
-spring.application.name=ai-codeless-app-builder
+spring:
+  application:
+    name: ai-codeless-app-builder-backend
+server:
+  port: 8123
+  servlet:
+    context-path: /api
+# springdoc-openapi
+springdoc:
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.hz.aicodelessappbuilder.controller
+# knife4j???????????????
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
