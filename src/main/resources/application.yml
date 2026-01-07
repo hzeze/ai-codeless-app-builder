@@ -1,6 +1,12 @@
 spring:
   application:
     name: ai-codeless-app-builder-backend
+# DataSource Config
+  datasource:
+    url: jdbc:mysql://localhost:3306/ai_codeless_app_builder
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
 server:
   port: 8123
   servlet:
