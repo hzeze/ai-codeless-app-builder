@@ -1,29 +1,29 @@
-# Êı¾İ¿â³õÊ¼»¯
-# @author <a href="https://github.com/hzeze">ºØÔó</a>
+# æ•°æ®åº“åˆå§‹åŒ–
+# @author <a href="https://github.com/hzeze">è´ºæ³½</a>
 
 
--- ´´½¨¿â
+-- åˆ›å»ºåº“
 create database if not exists ai_codeless_app_builder;
 
--- ÇĞ»»¿â
+-- åˆ‡æ¢åº“
 use ai_codeless_app_builder;
 
--- ÓÃ»§±í
--- ÒÔÏÂÊÇ½¨±íÓï¾ä
--- ÓÃ»§±í
+-- ç”¨æˆ·è¡¨
+-- ä»¥ä¸‹æ˜¯å»ºè¡¨è¯­å¥
+-- ç”¨æˆ·è¡¨
 create table if not exists user
 (
     id           bigint auto_increment comment 'id' primary key,
-    userAccount  varchar(256)                           not null comment 'ÕËºÅ',
-    userPassword varchar(512)                           not null comment 'ÃÜÂë',
-    userName     varchar(256)                           null comment 'ÓÃ»§êÇ³Æ',
-    userAvatar   varchar(1024)                          null comment 'ÓÃ»§Í·Ïñ',
-    userProfile  varchar(512)                           null comment 'ÓÃ»§¼ò½é',
-    userRole     varchar(256) default 'user'            not null comment 'ÓÃ»§½ÇÉ«£ºuser/admin',
-    editTime     datetime     default CURRENT_TIMESTAMP not null comment '±à¼­Ê±¼ä',
-    createTime   datetime     default CURRENT_TIMESTAMP not null comment '´´½¨Ê±¼ä',
-    updateTime   datetime     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '¸üĞÂÊ±¼ä',
-    isDelete     tinyint      default 0                 not null comment 'ÊÇ·ñÉ¾³ı',
+    userAccount  varchar(256)                           not null comment 'è´¦å·',
+    userPassword varchar(512)                           not null comment 'å¯†ç ',
+    userName     varchar(256)                           null comment 'ç”¨æˆ·æ˜µç§°',
+    userAvatar   varchar(1024)                          null comment 'ç”¨æˆ·å¤´åƒ',
+    userProfile  varchar(512)                           null comment 'ç”¨æˆ·ç®€ä»‹',
+    userRole     varchar(256) default 'user'            not null comment 'ç”¨æˆ·è§’è‰²ï¼šuser/admin',
+    editTime     datetime     default CURRENT_TIMESTAMP not null comment 'ç¼–è¾‘æ—¶é—´',
+    createTime   datetime     default CURRENT_TIMESTAMP not null comment 'åˆ›å»ºæ—¶é—´',
+    updateTime   datetime     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'æ›´æ–°æ—¶é—´',
+    isDelete     tinyint      default 0                 not null comment 'æ˜¯å¦åˆ é™¤',
     UNIQUE KEY uk_userAccount (userAccount),
     INDEX idx_userName (userName)
-) comment 'ÓÃ»§' collate = utf8mb4_unicode_ci;
+) comment 'ç”¨æˆ·' collate = utf8mb4_unicode_ci;
