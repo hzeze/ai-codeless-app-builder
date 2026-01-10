@@ -1,9 +1,14 @@
 package com.hz.aicodelessappbuilder.service;
 
+import com.hz.aicodelessappbuilder.model.dto.user.UserQueryRequest;
 import com.hz.aicodelessappbuilder.model.vo.LoginUserVO;
+import com.hz.aicodelessappbuilder.model.vo.UserVO;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
 import com.hz.aicodelessappbuilder.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 /**
  * 用户 服务层。
@@ -54,5 +59,35 @@ public interface UserService extends IService<User> {
      * @return
      */
     User getLoginUser(HttpServletRequest request);
+
+    /**
+     * 用户注销
+     *
+     * @param request
+     * @return
+     */
+    boolean userLogout(HttpServletRequest request);
+
+    /**
+     * 获取用户
+     *
+     * @param user
+     * @return
+     */
+    UserVO getUserVO(User user);
+
+    /**
+     * 获取用户列表
+     * @param userList
+     * @return
+     */
+    List<UserVO> getUserVOList(List<User> userList);
+
+    /**
+     * 获取查询条件
+     * @param userQueryRequest
+     * @return
+     */
+    QueryWrapper getQueryWrapper(UserQueryRequest userQueryRequest);
 
 }
