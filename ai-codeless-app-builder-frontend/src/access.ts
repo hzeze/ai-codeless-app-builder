@@ -2,8 +2,8 @@ import { useLoginUserStore } from '@/stores/loginUser'
 import { message } from 'ant-design-vue'
 import router from '@/router'
 
-// 是否为首次获取登录用户
-let firstFetchLoginUser = true
+// 是否已获取登录用户（避免热重载时的重复调用）
+let hasFetchedLoginUser = false
 
 /**
  * 全局权限校验
@@ -15,11 +15,12 @@ router.beforeEach(async (to, from, next) => {
   // 在登录和注册页面不需要获取用户信息，避免重复请求
   const isAuthPage = to.path === '/user/login' || to.path === '/user/register'
 
-  // 确保页面刷新，首次加载时，能够等后端返回用户信息后再校验权限
-  if (firstFetchLoginUser && !isAuthPage) {
+  // 只在首次访问且未获取过用户信息时调用，避免重复请求
+  if (!hasFetchedLoginUser && !isAuthPage && loginUser.userName === '未登录') {
+    console.log('路由守卫：首次获取用户信息')
     await loginUserStore.fetchLoginUser()
     loginUser = loginUserStore.loginUser
-    firstFetchLoginUser = false
+    hasFetchedLoginUser = true
   }
   const toUrl = to.fullPath
 
