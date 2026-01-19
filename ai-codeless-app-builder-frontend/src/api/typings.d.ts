@@ -1,33 +1,17 @@
 declare namespace API {
-  type App = {
-    id?: number
-    appName?: string
-    cover?: string
-    initPrompt?: string
-    codeGenType?: string
-    deployKey?: string
-    deployedTime?: string
-    priority?: number
-    userId?: number
-    editTime?: string
-    createTime?: string
-    updateTime?: string
-    isDelete?: number
-  }
-
   type AppAddRequest = {
     initPrompt?: string
   }
 
   type AppAdminUpdateRequest = {
-    id?: string
+    id?: number
     appName?: string
     cover?: string
     priority?: number
   }
 
   type AppDeployRequest = {
-    appId?: string
+    appId?: number
   }
 
   type AppQueryRequest = {
@@ -46,12 +30,12 @@ declare namespace API {
   }
 
   type AppUpdateRequest = {
-    id?: string
+    id?: number
     appName?: string
   }
 
   type AppVO = {
-    id?: string
+    id?: number
     appName?: string
     cover?: string
     initPrompt?: string
@@ -89,12 +73,6 @@ declare namespace API {
     message?: string
   }
 
-  type BaseResponsePageApp = {
-    code?: number
-    data?: PageApp
-    message?: string
-  }
-
   type BaseResponsePageAppVO = {
     code?: number
     data?: PageAppVO
@@ -126,7 +104,7 @@ declare namespace API {
   }
 
   type chatToGenCodeParams = {
-    appId: string
+    appId: number
     message: string
   }
 
@@ -135,11 +113,11 @@ declare namespace API {
   }
 
   type getAppVOByIdByAdminParams = {
-    id: string
+    id: number
   }
 
   type getAppVOByIdParams = {
-    id: string
+    id: number
   }
 
   type getUserByIdParams = {
@@ -159,15 +137,6 @@ declare namespace API {
     userRole?: string
     createTime?: string
     updateTime?: string
-  }
-
-  type PageApp = {
-    records?: App[]
-    pageNumber?: number
-    pageSize?: number
-    totalPage?: number
-    totalRow?: number
-    optimizeCountQuery?: boolean
   }
 
   type PageAppVO = {

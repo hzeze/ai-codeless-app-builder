@@ -1,162 +1,24 @@
-<script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { message } from 'ant-design-vue'
-import { getAppVoById, updateApp, getAppVoByIdByAdmin, updateAppByAdmin } from '@/api/appController.ts'
-import { useLoginUserStore } from '@/stores/loginUser.ts'
-
-const route = useRoute()
-const router = useRouter()
-const loginUserStore = useLoginUserStore()
-
-// 获取应用ID
-const appId = route.params.appId as string
-
-// 表单数据
-const formData = reactive<API.AppUpdateRequest | API.AppAdminUpdateRequest>({
-  id: appId,
-  appName: '',
-  cover: '',
-  priority: undefined
-})
-
-// 应用信息
-const appInfo = ref<API.AppVO | null>(null)
-const loading = ref(false)
-const saving = ref(false)
-
-// 判断是否为管理员
-const isAdmin = computed(() => {
-  return loginUserStore.loginUser.userRole === 'admin'
-})
-
-// 判断是否为应用所有者
-const isOwner = computed(() => {
-  return appInfo.value?.userId === loginUserStore.loginUser.id
-})
-
-// 表单验证规则
-const rules = computed(() => ({
-  appName: [
-    { required: true, message: '请输入应用名称', trigger: 'blur' },
-    { max: 50, message: '应用名称不能超过50个字符', trigger: 'blur' }
-  ],
-  cover: isAdmin.value ? [
-    { type: 'url', message: '请输入有效的URL', trigger: 'blur' }
-  ] : [],
-  priority: isAdmin.value ? [
-    { type: 'number', min: 0, max: 100, message: '优先级必须在0-100之间', trigger: 'blur' }
-  ] : []
-}))
-
-// 获取应用信息
-const loadAppInfo = async () => {
-  if (!appId) return
-
-  try {
-    loading.value = true
-    let response
-
-    // 根据用户角色调用不同的接口
-    if (isAdmin.value) {
-      response = await getAppVoByIdByAdmin({ id: appId })
-    } else {
-      response = await getAppVoById({ id: appId })
-    }
-
-    if (response.data.code === 0 && response.data.data) {
-      appInfo.value = response.data.data
-
-      // 如果不是管理员且不是应用所有者，无权访问
-      if (!isAdmin.value && !isOwner.value) {
-        message.error('无权访问此应用')
-        router.push('/')
-        return
-      }
-
-      // 初始化表单数据
-      formData.appName = appInfo.value?.appName || ''
-      if (isAdmin.value) {
-        (formData as API.AppAdminUpdateRequest).cover = appInfo.value?.cover || ''
-        ;(formData as API.AppAdminUpdateRequest).priority = appInfo.value?.priority || 0
-      }
-    } else {
-      message.error(response.data.message || '获取应用信息失败')
-      router.push('/')
-    }
-  } catch (error) {
-    console.error('获取应用信息失败:', error)
-    message.error('获取应用信息失败')
-    router.push('/')
-  } finally {
-    loading.value = false
-  }
-}
-
-// 保存应用信息
-const handleSave = async () => {
-  try {
-    saving.value = true
-
-    let response
-    if (isAdmin.value) {
-      response = await updateAppByAdmin(formData as API.AppAdminUpdateRequest)
-    } else {
-      response = await updateApp(formData as API.AppUpdateRequest)
-    }
-
-    if (response.data.code === 0) {
-      message.success('保存成功')
-      router.back()
-    } else {
-      message.error(response.data.message || '保存失败')
-    }
-  } catch (error) {
-    console.error('保存失败:', error)
-    message.error('保存失败')
-  } finally {
-    saving.value = false
-  }
-}
-
-// 取消编辑
-const handleCancel = () => {
-  router.back()
-}
-
-// 组件挂载时加载数据
-onMounted(() => {
-  loadAppInfo()
-})
-</script>
-
 <template>
-  <div class="app-edit-page">
+  <div id="appEditPage">
+    <div class="page-header">
+      <a-button type="text" @click="goBack">
+        <template #icon>
+          <ArrowLeftOutlined />
+        </template>
+        返回
+      </a-button>
+      <h1>编辑应用信息</h1>
+    </div>
+
     <div class="edit-container">
-      <!-- 页面标题 -->
-      <div class="page-header">
-        <h1>编辑应用信息</h1>
-        <p v-if="appInfo" class="app-info">
-          应用ID: {{ appInfo.id }} |
-          创建时间: {{ new Date(appInfo.createTime || '').toLocaleString() }}
-        </p>
-      </div>
-
-      <!-- 加载状态 -->
-      <div v-if="loading" class="loading-container">
-        <a-spin size="large" />
-        <p>加载中...</p>
-      </div>
-
-      <!-- 编辑表单 -->
-      <div v-else-if="appInfo" class="edit-form">
+      <a-card title="基本信息" :loading="loading">
         <a-form
           :model="formData"
           :rules="rules"
           layout="vertical"
-          @finish="handleSave"
+          @finish="handleSubmit"
+          ref="formRef"
         >
-          <!-- 应用名称 -->
           <a-form-item label="应用名称" name="appName">
             <a-input
               v-model:value="formData.appName"
@@ -166,145 +28,323 @@ onMounted(() => {
             />
           </a-form-item>
 
-          <!-- 初始提示词（只读） -->
-          <a-form-item label="初始提示词">
-            <a-textarea
-              v-model:value="appInfo.initPrompt"
-              :rows="4"
-              readonly
-              placeholder="无"
+          <a-form-item
+            v-if="isAdmin"
+            label="应用封面"
+            name="cover"
+            extra="支持图片链接，建议尺寸：400x300"
+          >
+            <a-input v-model:value="formData.cover" placeholder="请输入封面图片链接" />
+            <div v-if="formData.cover" class="cover-preview">
+              <a-image
+                :src="formData.cover"
+                :width="200"
+                :height="150"
+                fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+              />
+            </div>
+          </a-form-item>
+
+          <a-form-item v-if="isAdmin" label="优先级" name="priority" extra="设置为99表示精选应用">
+            <a-input-number
+              v-model:value="formData.priority"
+              :min="0"
+              :max="99"
+              style="width: 200px"
             />
           </a-form-item>
 
-          <!-- 管理员专用字段 -->
-          <template v-if="isAdmin">
-            <!-- 封面URL -->
-            <a-form-item label="封面URL" name="cover">
-              <a-input
-                v-model:value="(formData as API.AppAdminUpdateRequest).cover"
-                placeholder="请输入封面图片URL"
-              />
-            </a-form-item>
+          <a-form-item label="初始提示词" name="initPrompt">
+            <a-textarea
+              v-model:value="formData.initPrompt"
+              placeholder="请输入初始提示词"
+              :rows="4"
+              :maxlength="1000"
+              show-count
+              disabled
+            />
+            <div class="form-tip">初始提示词不可修改</div>
+          </a-form-item>
 
-            <!-- 优先级 -->
-            <a-form-item label="优先级" name="priority">
-              <a-input-number
-                v-model:value="(formData as API.AppAdminUpdateRequest).priority"
-                :min="0"
-                :max="100"
-                placeholder="请输入优先级 (0-100)"
-                style="width: 100%"
-              />
-              <div class="priority-hint">
-                <small>优先级99表示精选应用，将在精选应用列表中显示</small>
-              </div>
-            </a-form-item>
-          </template>
+          <a-form-item label="生成类型" name="codeGenType">
+            <a-input
+              :value="formatCodeGenType(formData.codeGenType)"
+              placeholder="生成类型"
+              disabled
+            />
+            <div class="form-tip">生成类型不可修改</div>
+          </a-form-item>
 
-          <!-- 操作按钮 -->
+          <a-form-item v-if="formData.deployKey" label="部署密钥" name="deployKey">
+            <a-input v-model:value="formData.deployKey" placeholder="部署密钥" disabled />
+            <div class="form-tip">部署密钥不可修改</div>
+          </a-form-item>
+
           <a-form-item>
             <a-space>
-              <a-button type="primary" html-type="submit" :loading="saving">
-                保存
+              <a-button type="primary" html-type="submit" :loading="submitting">
+                保存修改
               </a-button>
-              <a-button @click="handleCancel">
-                取消
-              </a-button>
+              <a-button @click="resetForm">重置</a-button>
+              <a-button type="link" @click="goToChat">进入对话</a-button>
             </a-space>
           </a-form-item>
         </a-form>
-      </div>
+      </a-card>
 
-      <!-- 权限不足提示 -->
-      <div v-else class="no-permission">
-        <a-empty description="无权访问此应用或应用不存在" />
-        <a-button type="primary" @click="router.push('/')">
-          返回首页
-        </a-button>
-      </div>
+      <!-- 应用信息展示 -->
+      <a-card title="应用信息" style="margin-top: 24px">
+        <a-descriptions :column="2" bordered>
+          <a-descriptions-item label="应用ID">
+            {{ appInfo?.id }}
+          </a-descriptions-item>
+          <a-descriptions-item label="创建者">
+            <div class="user-info">
+              <a-avatar :src="appInfo?.user?.userAvatar" size="small" />
+              <span>{{ appInfo?.user?.userName || '未知用户' }}</span>
+            </div>
+          </a-descriptions-item>
+          <a-descriptions-item label="创建时间">
+            {{ formatTime(appInfo?.createTime) }}
+          </a-descriptions-item>
+          <a-descriptions-item label="更新时间">
+            {{ formatTime(appInfo?.updateTime) }}
+          </a-descriptions-item>
+          <a-descriptions-item label="部署时间">
+            {{ appInfo?.deployedTime ? formatTime(appInfo.deployedTime) : '未部署' }}
+          </a-descriptions-item>
+          <a-descriptions-item label="访问链接">
+            <a-button v-if="appInfo?.deployKey" type="link" @click="openPreview" size="small">
+              查看预览
+            </a-button>
+            <span v-else>未部署</span>
+          </a-descriptions-item>
+        </a-descriptions>
+      </a-card>
     </div>
   </div>
 </template>
 
-<style scoped>
-.app-edit-page {
-  padding: 24px;
-  background: #f5f5f5;
-  min-height: 100vh;
+<script setup lang="ts">
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
+import { useLoginUserStore } from '@/stores/loginUser'
+import { getAppVoById, updateApp, updateAppByAdmin } from '@/api/appController'
+import { formatCodeGenType } from '@/utils/codeGenTypes'
+import { ArrowLeftOutlined } from '@ant-design/icons-vue'
+import dayjs from 'dayjs'
+import type { FormInstance } from 'ant-design-vue'
+
+const route = useRoute()
+const router = useRouter()
+const loginUserStore = useLoginUserStore()
+
+// 应用信息
+const appInfo = ref<API.AppVO>()
+const loading = ref(false)
+const submitting = ref(false)
+const formRef = ref<FormInstance>()
+
+// 表单数据
+const formData = reactive({
+  appName: '',
+  cover: '',
+  priority: 0,
+  initPrompt: '',
+  codeGenType: '',
+  deployKey: '',
+})
+
+// 是否为管理员
+const isAdmin = computed(() => {
+  return loginUserStore.loginUser.userRole === 'admin'
+})
+
+// 表单验证规则
+const rules = {
+  appName: [
+    { required: true, message: '请输入应用名称', trigger: 'blur' },
+    { min: 1, max: 50, message: '应用名称长度在1-50个字符', trigger: 'blur' },
+  ],
+  cover: [{ type: 'url', message: '请输入有效的URL', trigger: 'blur' }],
+  priority: [{ type: 'number', min: 0, max: 99, message: '优先级范围0-99', trigger: 'blur' }],
 }
 
-.edit-container {
-  max-width: 800px;
+// 获取应用信息
+const fetchAppInfo = async () => {
+  const id = route.params.appId as string
+  if (!id) {
+    message.error('应用ID不存在')
+    router.push('/')
+    return
+  }
+
+  loading.value = true
+  try {
+    const res = await getAppVoById({ id: id as unknown as number })
+    if (res.data.code === 0 && res.data.data) {
+      appInfo.value = res.data.data
+
+      // 检查权限
+      if (!isAdmin.value && appInfo.value.userId !== loginUserStore.loginUser.id) {
+        message.error('您没有权限编辑此应用')
+        router.push('/')
+        return
+      }
+
+      // 填充表单数据
+      formData.appName = appInfo.value.appName || ''
+      formData.cover = appInfo.value.cover || ''
+      formData.priority = appInfo.value.priority || 0
+      formData.initPrompt = appInfo.value.initPrompt || ''
+      formData.codeGenType = appInfo.value.codeGenType || ''
+      formData.deployKey = appInfo.value.deployKey || ''
+    } else {
+      message.error('获取应用信息失败')
+      router.push('/')
+    }
+  } catch (error) {
+    console.error('获取应用信息失败：', error)
+    message.error('获取应用信息失败')
+    router.push('/')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 提交表单
+const handleSubmit = async () => {
+  if (!appInfo.value?.id) return
+
+  submitting.value = true
+  try {
+    let res
+    if (isAdmin.value) {
+      // 管理员可以修改更多字段
+      res = await updateAppByAdmin({
+        id: appInfo.value.id,
+        appName: formData.appName,
+        cover: formData.cover,
+        priority: formData.priority,
+      })
+    } else {
+      // 普通用户只能修改应用名称
+      res = await updateApp({
+        id: appInfo.value.id,
+        appName: formData.appName,
+      })
+    }
+
+    if (res.data.code === 0) {
+      message.success('修改成功')
+      // 重新获取应用信息
+      await fetchAppInfo()
+    } else {
+      message.error('修改失败：' + res.data.message)
+    }
+  } catch (error) {
+    console.error('修改失败：', error)
+    message.error('修改失败')
+  } finally {
+    submitting.value = false
+  }
+}
+
+// 重置表单
+const resetForm = () => {
+  if (appInfo.value) {
+    formData.appName = appInfo.value.appName || ''
+    formData.cover = appInfo.value.cover || ''
+    formData.priority = appInfo.value.priority || 0
+  }
+  formRef.value?.clearValidate()
+}
+
+// 返回上一页
+const goBack = () => {
+  router.back()
+}
+
+// 进入对话页面
+const goToChat = () => {
+  if (appInfo.value?.id) {
+    router.push(`/app/chat/${appInfo.value.id}?view=1`)
+  }
+}
+
+// 打开预览
+const openPreview = () => {
+  if (appInfo.value?.codeGenType && appInfo.value?.id) {
+    const url = `http://localhost:8123/api/static/${appInfo.value.codeGenType}_${appInfo.value.id}/`
+    window.open(url, '_blank')
+  }
+}
+
+// 格式化时间
+const formatTime = (time: string | undefined) => {
+  if (!time) return ''
+  return dayjs(time).format('YYYY-MM-DD HH:mm:ss')
+}
+
+// 页面加载时获取应用信息
+onMounted(() => {
+  fetchAppInfo()
+})
+</script>
+
+<style scoped>
+#appEditPage {
+  padding: 24px;
+  max-width: 1000px;
   margin: 0 auto;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
 }
 
 .page-header {
-  padding: 24px;
-  border-bottom: 1px solid #e8e8e8;
-  background: #fafafa;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
 .page-header h1 {
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: #1f2937;
 }
 
-.app-info {
-  margin: 8px 0 0 0;
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.loading-container {
-  padding: 60px;
-  text-align: center;
-}
-
-.loading-container p {
-  margin-top: 16px;
-  color: #666;
-}
-
-.edit-form {
+.edit-container {
+  background: #f5f5f5;
   padding: 24px;
+  border-radius: 8px;
 }
 
-.priority-hint {
+.cover-preview {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.form-tip {
+  font-size: 12px;
+  color: #999;
   margin-top: 4px;
-  color: #666;
 }
 
-.no-permission {
-  padding: 60px;
-  text-align: center;
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.no-permission .ant-btn {
-  margin-top: 16px;
+:deep(.ant-card-head) {
+  background: #fafafa;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .app-edit-page {
-    padding: 16px;
-  }
-
-  .edit-container {
-    margin: 0;
-  }
-
-  .page-header {
-    padding: 16px;
-  }
-
-  .edit-form {
-    padding: 16px;
-  }
+:deep(.ant-descriptions-item-label) {
+  background: #fafafa;
+  font-weight: 500;
 }
 </style>
