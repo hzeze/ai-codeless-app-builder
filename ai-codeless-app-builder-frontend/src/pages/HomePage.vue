@@ -128,6 +128,13 @@
     }
   }
 
+  // 查看作品
+  const viewWork = (deployKey: string | undefined) => {
+    if (deployKey) {
+      window.open(`http://localhost/${deployKey}`, '_blank')
+    }
+  }
+
   // 格式化时间
   const formatTime = (time: string | undefined) => {
     if (!time) return ''
@@ -186,11 +193,17 @@
       <div class="section">
         <h2 class="section-title">我的作品</h2>
         <div class="app-grid">
-          <div v-for="app in myApps" :key="app.id" class="app-card" @click="viewApp(app.id)">
+          <div v-for="app in myApps" :key="app.id" class="app-card">
             <div class="app-preview">
               <img v-if="app.cover" :src="app.cover" :alt="app.appName" />
               <div v-else class="app-placeholder">
                 <span>🤖</span>
+              </div>
+              <div class="app-overlay">
+                <div class="overlay-buttons">
+                  <a-button type="primary" @click="viewApp(app.id)">查看对话</a-button>
+                  <a-button v-if="app.deployKey" type="default" @click="viewWork(app.deployKey)">查看作品</a-button>
+                </div>
               </div>
             </div>
             <div class="app-info">
@@ -222,7 +235,10 @@
                 <span>🤖</span>
               </div>
               <div class="featured-overlay">
-                <a-button type="primary" @click="viewApp(app.id)">查看详情</a-button>
+                <div class="overlay-buttons">
+                  <a-button type="primary" @click="viewApp(app.id)">查看对话</a-button>
+                  <a-button v-if="app.deployKey" type="default" @click="viewWork(app.deployKey)">查看作品</a-button>
+                </div>
               </div>
             </div>
             <div class="featured-info">
@@ -366,6 +382,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    position: relative;
   }
 
   .app-preview img {
@@ -377,6 +394,31 @@
   .app-placeholder {
     font-size: 48px;
     color: #d9d9d9;
+  }
+
+  .app-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .app-card:hover .app-overlay {
+    opacity: 1;
+  }
+
+  .overlay-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
   }
 
   .app-info {
@@ -452,6 +494,13 @@
     justify-content: center;
     opacity: 0;
     transition: opacity 0.3s;
+  }
+
+  .featured-overlay .overlay-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .featured-card:hover .featured-overlay {
