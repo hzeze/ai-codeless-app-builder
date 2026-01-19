@@ -124,7 +124,7 @@
   // 查看应用
   const viewApp = (appId: string | undefined) => {
     if (appId) {
-      router.push(`/app/chat/${appId}`)
+      router.push(`/app/chat/${appId}?view=1`)
     }
   }
 
