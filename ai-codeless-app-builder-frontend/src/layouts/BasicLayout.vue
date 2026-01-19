@@ -31,9 +31,9 @@ const isAuthPage = computed(() => {
   return route.path === '/user/login' || route.path === '/user/register'
 })
 
-// 内容区域高度
+// 内容区域高度 - 对于非认证页面，设置最小高度但允许滚动
 const contentHeight = computed(() => {
-  return isAuthPage.value ? '100vh' : 'calc(100vh - 128px)'
+  return isAuthPage.value ? '100vh' : 'auto'
 })
 </script>
 
@@ -55,7 +55,7 @@ const contentHeight = computed(() => {
   flex: 1;
   padding: 0; /* 移除内边距，由页面自己控制 */
   background: #fff;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .layout-footer {

@@ -4,9 +4,9 @@ import UserManagePage from '@/pages/admin/UserManagePage.vue'
 import UserRegisterPage from '@/pages/user/UserRegisterPage.vue'
 import UserLoginPage from '@/pages/user/UserLoginPage.vue'
 import HomePage from '@/pages/HomePage.vue'
-import AppChatPage from '@/pages/AppChatPage.vue'
+import AppChatPage from '@/pages/app/AppChatPage.vue'
 import AppManagePage from '@/pages/admin/AppManagePage.vue'
-import AppEditPage from '@/pages/AppEditPage.vue'
+import AppEditPage from '@/pages/app/AppEditPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,7 +49,7 @@ const router = createRouter({
     {
       path: '/app/manage',
       name: '我的应用',
-      component: () => import('@/pages/AppManagePage.vue'),
+      component: () => import('@/pages/admin/AppManagePage.vue'),
     },
   ],
 })
