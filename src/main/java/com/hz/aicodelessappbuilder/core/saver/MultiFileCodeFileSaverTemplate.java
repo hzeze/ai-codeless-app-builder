@@ -14,7 +14,7 @@ public class MultiFileCodeFileSaverTemplate extends CodeFileSaverTemplate<MultiF
     @Override
     protected void saveFiles(MultiFileCodeResult result, String baseDirPath) {
         writeToFile(baseDirPath, "index.html", result.getHtmlCode());
-        writeToFile(baseDirPath, "index.js", result.getJsCode());
-        writeToFile(baseDirPath, "index.css", result.getCssCode());
+        writeToFile(baseDirPath, "script.js", result.getJsCode());
+        writeToFile(baseDirPath, "style.css", result.getCssCode());
     }
 }
