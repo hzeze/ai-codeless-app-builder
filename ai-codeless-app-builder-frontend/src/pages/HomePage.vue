@@ -122,7 +122,7 @@
 
 
   // 查看应用
-  const viewApp = (appId: string | undefined) => {
+  const viewApp = (appId: number | undefined) => {
     if (appId) {
       router.push(`/app/chat/${appId}?view=1`)
     }
@@ -160,7 +160,7 @@
       <div class="input-section">
         <a-textarea
           v-model:value="userPrompt"
-          placeholder="使用 NoCode 创建一个高效的小工具，帮我计算......"
+          placeholder="使用 AI 创建一个高效的小工具，帮我计算......"
           :rows="4"
           :maxlength="1000"
           show-count
