@@ -7,6 +7,7 @@ import './access'
 
 import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/reset.css'
+import 'highlight.js/styles/github.css'
 
 const app = createApp(App)
 

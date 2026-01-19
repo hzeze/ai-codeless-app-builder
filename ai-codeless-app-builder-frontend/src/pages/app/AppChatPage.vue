@@ -44,7 +44,9 @@
                 <a-avatar style="background-color: #1890ff">AI</a-avatar>
               </div>
               <div class="message-content">
-                <div v-if="message.content" class="message-text">{{ message.content }}</div>
+                <div v-if="message.content" class="message-text">
+                  <MarkdownMessage :content="message.content" />
+                </div>
                 <div v-if="message.loading" class="loading-indicator">
                   <a-spin size="small" />
                   <span>AI 正在思考...</span>
@@ -209,6 +211,7 @@ import {
 import { CodeGenTypeEnum } from '@/utils/codeGenTypes'
 import request from '@/request'
 import dayjs from 'dayjs'
+import MarkdownMessage from '@/components/MarkdownMessage.vue'
 
 import {
   ArrowLeftOutlined,
@@ -675,11 +678,9 @@ onUnmounted(() => {
   color: #1a1a1a;
 }
 
-/* 简单的文本样式 */
-.message-content {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  line-height: 1.5;
+/* Markdown 内容样式 */
+.message-text {
+  line-height: 1.6;
 }
 
 .message-avatar {
