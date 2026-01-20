@@ -242,8 +242,16 @@
               </div>
             </div>
             <div class="featured-info">
-              <h3 class="featured-title">{{ app.appName || '未命名应用' }}</h3>
-              <p class="featured-author">{{ app.user?.userName || 'NoCode 官方' }}</p>
+              <div class="user-avatar">
+                <img v-if="app.user?.userAvatar" :src="app.user.userAvatar" :alt="app.user?.userName" />
+                <div v-else class="avatar-placeholder">
+                  <span>{{ (app.user?.userName || 'NoCode 官方').charAt(0) }}</span>
+                </div>
+              </div>
+              <div class="app-details">
+                <h3 class="app-title">{{ app.appName || '未命名应用' }}</h3>
+                <p class="user-name">{{ app.user?.userName || 'NoCode 官方' }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -509,16 +517,53 @@
 
   .featured-info {
     padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
-  .featured-title {
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #1890ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .app-details {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .app-title {
     font-size: 16px;
     font-weight: 600;
-    margin: 0 0 8px;
+    margin: 0 0 4px;
     color: #1a1a1a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .featured-author {
+  .user-name {
     font-size: 14px;
     color: #666;
     margin: 0;
