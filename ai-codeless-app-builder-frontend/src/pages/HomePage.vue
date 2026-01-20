@@ -4,7 +4,7 @@
   import { message } from 'ant-design-vue'
   import { useLoginUserStore } from '@/stores/loginUser'
   import { addApp, listMyAppVoByPage, listGoodAppVoByPage } from '@/api/appController'
-  import { getAppDeployUrl } from '@/env'
+  import { getAppDeployUrl } from '@/config/env.ts'
   import dayjs from 'dayjs'
 
   const router = useRouter()

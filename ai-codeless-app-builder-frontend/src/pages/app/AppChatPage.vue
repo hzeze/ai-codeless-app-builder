@@ -209,7 +209,7 @@ import {
   deleteApp as deleteAppApi,
 } from '@/api/appController'
 import { CodeGenTypeEnum } from '@/utils/codeGenTypes'
-import { getAppPreviewUrl } from '@/env'
+import { getAppPreviewUrl } from '@/config/env.ts'
 import request from '@/request'
 import dayjs from 'dayjs'
 import MarkdownMessage from '@/components/MarkdownMessage.vue'
