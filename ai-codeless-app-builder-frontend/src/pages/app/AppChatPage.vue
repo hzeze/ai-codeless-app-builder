@@ -209,6 +209,7 @@ import {
   deleteApp as deleteAppApi,
 } from '@/api/appController'
 import { CodeGenTypeEnum } from '@/utils/codeGenTypes'
+import { getAppPreviewUrl } from '@/env'
 import request from '@/request'
 import dayjs from 'dayjs'
 import MarkdownMessage from '@/components/MarkdownMessage.vue'
@@ -369,7 +370,7 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
 
   try {
     // 获取 axios 配置的 baseURL
-    const baseURL = request.defaults.baseURL || 'http://localhost:8123/api'
+    const baseURL = request.defaults.baseURL || API_BASE_URL
 
     // 构建URL参数
     const params = new URLSearchParams({
@@ -459,7 +460,7 @@ const handleError = (error: unknown, aiMessageIndex: number) => {
 const updatePreview = () => {
   if (appId.value) {
     const codeGenType = appInfo.value?.codeGenType || CodeGenTypeEnum.HTML
-    const newPreviewUrl = `http://localhost:8123/api/static/${codeGenType}_${appId.value}/`
+    const newPreviewUrl = getAppPreviewUrl(codeGenType, appId.value.toString())
     previewUrl.value = newPreviewUrl
     previewReady.value = true
   }

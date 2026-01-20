@@ -21,8 +21,8 @@
 import { RouterView } from 'vue-router'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import GlobalHeader from '../components/GlobalHeader.vue'
-import GlobalFooter from '../components/GlobalFooter.vue'
+import GlobalHeader from '@/components/GlobalHeader.vue'
+import GlobalFooter from '@/components/GlobalFooter.vue'
 
 const route = useRoute()
 

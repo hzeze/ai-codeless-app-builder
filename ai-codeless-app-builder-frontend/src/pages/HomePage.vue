@@ -4,6 +4,7 @@
   import { message } from 'ant-design-vue'
   import { useLoginUserStore } from '@/stores/loginUser'
   import { addApp, listMyAppVoByPage, listGoodAppVoByPage } from '@/api/appController'
+  import { getAppDeployUrl } from '@/env'
   import dayjs from 'dayjs'
 
   const router = useRouter()
@@ -131,7 +132,7 @@
   // 查看作品
   const viewWork = (deployKey: string | undefined) => {
     if (deployKey) {
-      window.open(`http://localhost/${deployKey}`, '_blank')
+      window.open(getAppDeployUrl(deployKey), '_blank')
     }
   }
 
