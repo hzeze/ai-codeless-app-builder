@@ -46,7 +46,7 @@ export async function listAppVoByPageByAdmin(
   body: API.AppQueryRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.BaseResponsePageApp>('/app/admin/list/page/vo', {
+  return request<API.BaseResponsePageAppVO>('/app/admin/list/page/vo', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
