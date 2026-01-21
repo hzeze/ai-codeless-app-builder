@@ -95,6 +95,7 @@ public class AppController {
         if (!oldApp.getUserId().equals(loginUser.getId()) && !UserConstant.ADMIN_ROLE.equals(loginUser.getUserRole())) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
+        // 删除应用时，关联删除该应用的所有对话历史
         boolean b = appService.removeById(id);
         return ResultUtils.success(b);
     }
@@ -209,6 +210,7 @@ public class AppController {
         // 判断是否存在
         App oldApp = appService.getById(id);
         ThrowUtils.throwIf(oldApp == null, ErrorCode.NOT_FOUND_ERROR);
+        // 删除应用时，关联删除该应用的所有对话历史
         boolean result = appService.removeById(id);
         return ResultUtils.success(result);
     }

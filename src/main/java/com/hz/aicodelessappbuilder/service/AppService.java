@@ -8,6 +8,7 @@ import com.mybatisflex.core.service.IService;
 import com.hz.aicodelessappbuilder.model.entity.App;
 import reactor.core.publisher.Flux;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -49,7 +50,29 @@ public interface AppService extends IService<App> {
      */
     void validApp(App app, boolean add);
 
+
+    /**
+     * 生成代码
+     * @param appId 应用id
+     * @param message 消息
+     * @param loginUser 登录用户
+     * @return
+     */
     Flux<String> chatToGenCode(Long appId, String message, User loginUser);
 
+    /**
+     * 部署应用
+     * @param appId 应用id
+     * @param loginUser 登录用户
+     * @return
+     */
     String deployApp(Long appId, User loginUser);
+
+
+    /**
+     * 根据id删除应用
+     * @param id
+     * @return
+     */
+    boolean removeById(Serializable id);
 }
