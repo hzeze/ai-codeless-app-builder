@@ -100,8 +100,8 @@
           </a-descriptions-item>
           <a-descriptions-item label="创建者">
             <div class="user-info">
-              <a-avatar :src="appInfo?.user?.userAvatar" size="small" />
-              <span>{{ appInfo?.user?.userName || '未知用户' }}</span>
+              <a-avatar :src="appInfo?.userVO?.userAvatar" size="small" />
+              <span>{{ appInfo?.userVO?.userName || '未知用户' }}</span>
             </div>
           </a-descriptions-item>
           <a-descriptions-item label="创建时间">

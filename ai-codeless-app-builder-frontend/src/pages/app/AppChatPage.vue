@@ -135,8 +135,8 @@
           <div class="info-item">
             <span class="info-label">创建者：</span>
             <div class="creator-info">
-              <a-avatar :src="appInfo?.user?.userAvatar" size="small" />
-              <span class="creator-name">{{ appInfo?.user?.userName || '未知用户' }}</span>
+              <a-avatar :src="appInfo?.userVO?.userAvatar" size="small" />
+              <span class="creator-name">{{ appInfo?.userVO?.userName || '未知用户' }}</span>
             </div>
           </div>
           <div class="info-item">
@@ -209,7 +209,7 @@ import {
   deleteApp as deleteAppApi,
 } from '@/api/appController'
 import { CodeGenTypeEnum } from '@/utils/codeGenTypes'
-import { getAppPreviewUrl } from '@/config/env.ts'
+import { API_BASE_URL, getAppPreviewUrl } from '@/config/env.ts'
 import request from '@/request'
 import dayjs from 'dayjs'
 import MarkdownMessage from '@/components/MarkdownMessage.vue'
@@ -232,7 +232,7 @@ const loginUserStore = useLoginUserStore()
 
 // 应用信息
 const appInfo = ref<API.AppVO>()
-const appId = ref<string>()
+const appId = ref<any>()
 
 // 对话相关
 interface Message {
@@ -285,7 +285,7 @@ const fetchAppInfo = async () => {
   appId.value = id
 
   try {
-    const res = await getAppVoById({ id: id })
+    const res = await getAppVoById({ id: id as unknown as number })
     if (res.data.code === 0 && res.data.data) {
       appInfo.value = res.data.data
 
