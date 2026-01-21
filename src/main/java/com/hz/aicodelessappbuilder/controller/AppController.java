@@ -66,7 +66,7 @@ public class AppController {
         // 获取登录用户
         User loginUser = userService.getLoginUser(request);
         app.setUserId(loginUser.getId());
-        //名称暂时为prompt的前112位
+        //名称暂时为prompt的前12位
         app.setAppName(initPrompt.substring(0, Math.min(initPrompt.length(), 12)));
         app.setCodeGenType(CodeGenTypeEnum.MULTI_FILE.getValue());
         boolean result = appService.save(app);
@@ -167,7 +167,7 @@ public class AppController {
         }
 
         Page<App> appPage = appService.page(Page.of(current, size), appService.getQueryWrapper(appQueryRequest));
-        return ResultUtils.success(getAppVOPage(appPage));
+        return ResultUtils.success(appService.getAppVOPage(appPage));
     }
 
     /**
@@ -191,7 +191,7 @@ public class AppController {
         appQueryRequest.setPriority(AppConstant.GOOD_APP_PRIORITY);
         QueryWrapper queryWrapper = appService.getQueryWrapper(appQueryRequest);
         Page<App> appPage = appService.page(Page.of(current, size), queryWrapper);
-        return ResultUtils.success(getAppVOPage(appPage));
+        return ResultUtils.success(appService.getAppVOPage(appPage));
     }
 
     /**
@@ -274,27 +274,13 @@ public class AppController {
         return ResultUtils.success(appService.getAppVO(app));
     }
 
-
-    /**
-     * 获取分页应用VO
-     *
-     * @param appPage 应用分页
-     * @return 应用VO分页
-     */
-    private Page<AppVO> getAppVOPage(Page<App> appPage) {
-        List<AppVO> appVOList = appService.getAppVOList(appPage.getRecords());
-        Page<AppVO> appVOPage = new Page<>(appPage.getPageNumber(), appPage.getPageSize(), appPage.getTotalRow());
-        appVOPage.setRecords(appVOList);
-        return appVOPage;
-    }
-
     /**
      * 应用聊天生成代码（SSE流式返回）
      *
-     * @param appId
-     * @param message
-     * @param request
-     * @return
+     * @param appId 应用ID
+     * @param message 用户消息
+     * @param request 请求
+     * @return 代码生成结果
      */
     @GetMapping(value = "/chat/gen/code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> chatToGenCode(@RequestParam Long appId,

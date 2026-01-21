@@ -3,6 +3,7 @@ package com.hz.aicodelessappbuilder.service;
 import com.hz.aicodelessappbuilder.model.dto.app.AppQueryRequest;
 import com.hz.aicodelessappbuilder.model.entity.User;
 import com.hz.aicodelessappbuilder.model.vo.AppVO;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
 import com.hz.aicodelessappbuilder.model.entity.App;
@@ -35,20 +36,19 @@ public interface AppService extends IService<App> {
     List<AppVO> getAppVOList(List<App> appList);
 
     /**
+     * 分页获取应用视图对象列表
+     * @param appPage 应用分页对象
+     * @return 应用视图对象分页列表
+     */
+    Page<AppVO> getAppVOPage(Page<App> appPage);
+
+    /**
      * 获取查询条件
      *
      * @param appQueryRequest 查询请求
      * @return 查询条件
      */
     QueryWrapper getQueryWrapper(AppQueryRequest appQueryRequest);
-
-    /**
-     * 校验应用数据
-     *
-     * @param app 应用实体
-     * @param add 是否为添加操作
-     */
-    void validApp(App app, boolean add);
 
 
     /**

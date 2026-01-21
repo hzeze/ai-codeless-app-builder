@@ -18,6 +18,7 @@ import com.hz.aicodelessappbuilder.model.vo.AppVO;
 import com.hz.aicodelessappbuilder.model.vo.UserVO;
 import com.hz.aicodelessappbuilder.service.ChatHistoryService;
 import com.hz.aicodelessappbuilder.service.UserService;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.hz.aicodelessappbuilder.model.entity.App;
@@ -92,6 +93,15 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         }).collect(Collectors.toList());
     }
 
+
+    @Override
+    public Page<AppVO> getAppVOPage(Page<App> appPage) {
+        List<AppVO> appVOList = getAppVOList(appPage.getRecords());
+        Page<AppVO> appVOPage = new Page<>(appPage.getPageNumber(), appPage.getPageSize(), appPage.getTotalRow());
+        appVOPage.setRecords(appVOList);
+        return appVOPage;
+    }
+
     @Override
     public QueryWrapper getQueryWrapper(AppQueryRequest appQueryRequest) {
         if (appQueryRequest == null) {
@@ -120,31 +130,6 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
                 .orderBy(sortField, "ascend".equals(sortOrder));
     }
 
-    @Override
-    public void validApp(App app, boolean add) {
-        if (app == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-
-        String appName = app.getAppName();
-        String initPrompt = app.getInitPrompt();
-
-        // 创建时，参数不能为空
-        if (add) {
-            if (StrUtil.hasBlank(appName, initPrompt)) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR, "应用名称和初始prompt不能为空");
-            }
-        }
-
-        // 有参数则校验
-        if (StrUtil.isNotBlank(appName) && appName.length() > 80) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "应用名称过长");
-        }
-
-        if (StrUtil.isNotBlank(initPrompt) && initPrompt.length() > 2000) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "初始prompt过长");
-        }
-    }
 
     @Override
     public Flux<String> chatToGenCode(Long appId, String message, User loginUser) {
