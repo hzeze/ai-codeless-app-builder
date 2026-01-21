@@ -42,11 +42,6 @@ public class ChatHistory implements Serializable {
     private String message;
 
     /**
-     * 错误信息（仅当AI回复失败时使用）
-     */
-    private String errorMessage;
-
-    /**
      * user/ai
      */
     @Column("messageType")

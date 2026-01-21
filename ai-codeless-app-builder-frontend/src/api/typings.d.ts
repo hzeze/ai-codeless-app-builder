@@ -134,7 +134,6 @@ declare namespace API {
   type ChatHistory = {
     id?: number
     message?: string
-    errorMessage?: string
     messageType?: string
     appId?: number
     userId?: number
