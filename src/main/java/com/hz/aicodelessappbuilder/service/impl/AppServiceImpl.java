@@ -7,6 +7,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.hz.aicodelessappbuilder.constant.AppConstant;
 import com.hz.aicodelessappbuilder.core.AiCodeGeneratorFacade;
+import com.hz.aicodelessappbuilder.core.handler.StreamHandlerExecutor;
 import com.hz.aicodelessappbuilder.exception.BusinessException;
 import com.hz.aicodelessappbuilder.exception.ErrorCode;
 import com.hz.aicodelessappbuilder.exception.ThrowUtils;
@@ -55,6 +56,9 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
 
     @Resource
     private ChatHistoryService chatHistoryService;
+
+    @Resource
+    private StreamHandlerExecutor streamHandlerExecutor;
 
     @Override
     public AppVO getAppVO(App app) {
@@ -151,22 +155,11 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         }
         // 5. 保存用户消息
         chatHistoryService.addChatMessage(appId, message, MessageTypeEnum.USER.getValue(), loginUser.getId());
-        // 6. 调用 AI 生成代码，并处理结果
-        final StringBuilder aiResponseBuilder = new StringBuilder();
-        return aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId)
-                .doOnNext(chunk -> aiResponseBuilder.append(chunk))
-                .doOnComplete(() -> {
-                    // AI回复完成时保存完整的AI消息
-                    String aiResponse = aiResponseBuilder.toString();
-                    if (!aiResponse.isEmpty()) {
-                        chatHistoryService.addChatMessage(appId, aiResponse,MessageTypeEnum.AI.getValue(), loginUser.getId());
-                    }
-                })
-                .doOnError(throwable -> {
-                    // 如果AI回复失败，也要记录错误消息
-                    String errorMessage = "AI回复失败: " + throwable.getMessage();
-                    chatHistoryService.addChatMessage(appId, errorMessage, MessageTypeEnum.AI.getValue(), loginUser.getId());
-                });
+        // 6. 调用 AI 生成代码（流式）
+        Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
+        // 7. 收集 AI 响应内容并在完成后记录到对话历史
+        return streamHandlerExecutor.doExecute(codeStream, chatHistoryService, appId, loginUser, codeGenTypeEnum);
+
     }
 
 
