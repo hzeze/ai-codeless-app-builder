@@ -1,5 +1,6 @@
 package com.hz.aicodelessappbuilder.service;
 
+import com.hz.aicodelessappbuilder.model.dto.app.AppAddRequest;
 import com.hz.aicodelessappbuilder.model.dto.app.AppQueryRequest;
 import com.hz.aicodelessappbuilder.model.entity.User;
 import com.hz.aicodelessappbuilder.model.vo.AppVO;
@@ -69,10 +70,15 @@ public interface AppService extends IService<App> {
     String deployApp(Long appId, User loginUser);
 
 
+    void generateAppScreenshotAsync(Long appId, String appUrl);
+
     /**
      * 根据id删除应用
      * @param id
      * @return
      */
     boolean removeById(Serializable id);
+
+    Long createApp(AppAddRequest appAddRequest, User loginUser);
+
 }

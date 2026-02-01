@@ -9,6 +9,7 @@
           </template>
         </a-button>
         <h1 class="app-name">{{ appInfo?.appName || '个人博客生成器' }}</h1>
+        <a-tag class="gen-type-tag" color="blue">{{ formatCodeGenType(appInfo?.codeGenType) }}</a-tag>
       </div>
       <div class="header-right">
         <a-button type="default" @click="showAppDetail">
@@ -17,11 +18,17 @@
           </template>
           应用详情
         </a-button>
+        <a-button type="default" @click="downloadCode" :loading="downloading">
+          <template #icon>
+            <DownloadOutlined />
+          </template>
+          下载代码
+        </a-button>
         <a-button type="primary" @click="deployApp" :loading="deploying">
           <template #icon>
             <CloudUploadOutlined />
           </template>
-          部署按钮
+          部署
         </a-button>
       </div>
     </div>
@@ -146,6 +153,10 @@
             </div>
           </div>
           <div class="info-item">
+            <span class="info-label">生成类型：</span>
+            <a-tag color="blue">{{ formatCodeGenType(appInfo?.codeGenType) }}</a-tag>
+          </div>
+          <div class="info-item">
             <span class="info-label">创建时间：</span>
             <span>{{ formatTime(appInfo?.createTime) }}</span>
           </div>
@@ -213,9 +224,10 @@ import {
   getAppVoById,
   deployApp as deployAppApi,
   deleteApp as deleteAppApi,
+  downloadAppCode,
 } from '@/api/appController'
 import { listAppChatHistory } from '@/api/chatHistoryController'
-import { CodeGenTypeEnum } from '@/utils/codeGenTypes'
+import { CodeGenTypeEnum, formatCodeGenType } from '@/utils/codeGenTypes'
 import { API_BASE_URL, getAppPreviewUrl } from '@/config/env.ts'
 import request from '@/request'
 import dayjs from 'dayjs'
@@ -231,6 +243,7 @@ import {
   InfoCircleOutlined,
   EditOutlined,
   DeleteOutlined,
+  DownloadOutlined,
 } from '@ant-design/icons-vue'
 
 const route = useRoute()
@@ -267,6 +280,9 @@ const previewReady = ref(false)
 const deploying = ref(false)
 const deployModalVisible = ref(false)
 const deployUrl = ref('')
+
+// 下载相关
+const downloading = ref(false)
 
 // 权限相关
 const isOwner = computed(() => {
@@ -584,6 +600,55 @@ const deployApp = async () => {
   }
 }
 
+// 下载代码
+const downloadCode = async () => {
+  if (!appId.value) {
+    message.error('应用ID不存在')
+    return
+  }
+
+  downloading.value = true
+  try {
+    const res = await downloadAppCode({
+      appId: appId.value,
+    }, {
+      responseType: 'blob', // 重要：指定响应类型为blob以处理二进制数据
+    })
+
+    // 创建blob对象
+    const blob = new Blob([res.data], { type: 'application/zip' })
+
+    // 从响应头中提取文件名，如果没有则使用默认名称
+    const contentDisposition = res.headers['content-disposition'] || ''
+    let filename = `app-${appId.value}.zip`
+
+    // 尝试从Content-Disposition头中提取文件名
+    const filenameMatch = contentDisposition.match(/filename="([^"]+)"/)
+    if (filenameMatch) {
+      filename = filenameMatch[1]
+    }
+
+    // 创建下载链接并触发下载
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+
+    // 清理资源
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+
+    message.success('代码下载成功')
+  } catch (error) {
+    console.error('下载失败：', error)
+    message.error('下载失败，请重试')
+  } finally {
+    downloading.value = false
+  }
+}
+
 // 在新窗口打开预览
 const openInNewTab = () => {
   if (previewUrl.value) {
@@ -680,6 +745,13 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.gen-type-tag {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
 }
 
 .app-name {
