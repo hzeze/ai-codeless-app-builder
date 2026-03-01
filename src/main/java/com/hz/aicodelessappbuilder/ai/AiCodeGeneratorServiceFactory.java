@@ -2,7 +2,7 @@ package com.hz.aicodelessappbuilder.ai;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.hz.aicodelessappbuilder.ai.tools.FileWriteTool;
+import com.hz.aicodelessappbuilder.ai.tools.ToolManager;
 import com.hz.aicodelessappbuilder.exception.BusinessException;
 import com.hz.aicodelessappbuilder.exception.ErrorCode;
 import com.hz.aicodelessappbuilder.model.enums.CodeGenTypeEnum;
@@ -37,6 +37,9 @@ public class AiCodeGeneratorServiceFactory {
 
     @Resource
     private ChatHistoryService chatHistoryService;
+
+    @Resource
+    private ToolManager toolManager;
 
     /**
      * AI 服务实例缓存
@@ -88,7 +91,7 @@ public class AiCodeGeneratorServiceFactory {
                     .chatModel(chatModel)
                     .streamingChatModel(reasoningStreamingChatModel)
                     .chatMemoryProvider(memoryId -> chatMemory)
-                    .tools(new FileWriteTool())
+                    .tools(toolManager.getAllTools())
                     .hallucinatedToolNameStrategy(
                             toolExecutionRequest -> ToolExecutionResultMessage
                                     .from(toolExecutionRequest, "未找到工具" + toolExecutionRequest.name()))
