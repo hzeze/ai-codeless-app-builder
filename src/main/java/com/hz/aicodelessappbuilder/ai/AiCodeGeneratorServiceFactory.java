@@ -2,6 +2,7 @@ package com.hz.aicodelessappbuilder.ai;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.hz.aicodelessappbuilder.ai.guardrail.PromptSafetyInputGuardrail;
 import com.hz.aicodelessappbuilder.ai.tools.ToolManager;
 import com.hz.aicodelessappbuilder.exception.BusinessException;
 import com.hz.aicodelessappbuilder.exception.ErrorCode;
@@ -92,6 +93,7 @@ public class AiCodeGeneratorServiceFactory {
                     .streamingChatModel(reasoningStreamingChatModel)
                     .chatMemoryProvider(memoryId -> chatMemory)
                     .tools(toolManager.getAllTools())
+                    .inputGuardrails(new PromptSafetyInputGuardrail())
                     .hallucinatedToolNameStrategy(
                             toolExecutionRequest -> ToolExecutionResultMessage
                                     .from(toolExecutionRequest, "未找到工具" + toolExecutionRequest.name()))
@@ -100,6 +102,7 @@ public class AiCodeGeneratorServiceFactory {
             case HTML, MULTI_FILE -> AiServices.builder(AiCodeGeneratorService.class)
                     .chatModel(chatModel)
                     .streamingChatModel(openAiStreamingChatModel)
+                    .inputGuardrails(new PromptSafetyInputGuardrail())
                     .chatMemory(chatMemory)
                     .build();
             default -> throw new BusinessException(ErrorCode.SYSTEM_ERROR, "不支持的生成类型：" + codeGenType.getValue());
