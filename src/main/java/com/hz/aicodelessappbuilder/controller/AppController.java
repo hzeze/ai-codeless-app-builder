@@ -14,6 +14,8 @@ import com.hz.aicodelessappbuilder.exception.ErrorCode;
 import com.hz.aicodelessappbuilder.exception.ThrowUtils;
 import com.hz.aicodelessappbuilder.model.dto.app.*;
 import com.hz.aicodelessappbuilder.model.vo.AppVO;
+import com.hz.aicodelessappbuilder.ratelimiter.annotation.RateLimit;
+import com.hz.aicodelessappbuilder.ratelimiter.enums.RateLimitType;
 import com.hz.aicodelessappbuilder.service.ProjectDownloadService;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
@@ -283,6 +285,7 @@ public class AppController {
      * @return 代码生成结果
      */
     @GetMapping(value = "/chat/gen/code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @RateLimit(limitType = RateLimitType.IP, rate = 5, rateInterval = 60, message = "AI 对话请求过于频繁，请稍后再试")
     public Flux<ServerSentEvent<String>> chatToGenCode(@RequestParam Long appId,
                                                        @RequestParam String message,
                                                        HttpServletRequest request) {
