@@ -50,3 +50,29 @@ management:
   endpoint:
     health:
       show-details: always
+# AI
+langchain4j:
+  open-ai:
+    chat-model:
+      base-url: https://api.deepseek.com
+      api-key: <Your api key>
+      model-name: deepseek-chat
+      #      strict-json-schema: true
+      #      response-format: json_object
+      log-requests: true
+      log-responses: true
+    streaming-chat-model:
+      base-url: https://api.deepseek.com
+      api-key: <Your api key>
+      model-name: deepseek-chat
+      max-tokens: 8192
+      log-requests: true
+      log-responses: true
+# 添加 COS 对象存储配置（腾讯云）
+cos:
+  client:
+    host: <Your host>
+    secretId: <Your secretId>
+    secretKey: <Your secretKey>
+    region: <Your region>
+    bucket: <Your bucket>
