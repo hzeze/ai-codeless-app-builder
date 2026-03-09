@@ -28,17 +28,16 @@ import java.time.Duration;
 @Slf4j
 public class WebScreenshotUtils {
 
-    private static final WebDriver webDriver;
+    private static volatile WebDriver webDriver;
 
-    static {
-        final int DEFAULT_WIDTH = 1600;
-        final int DEFAULT_HEIGHT = 900;
-        webDriver = initChromeDriver(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    private static final String CHROME_DRIVER_PATH =
+            System.getProperty("user.dir") + "/src/main/resources/chromedriver/chromedriver.exe";
 
-        System.setProperty("wdm.timeout", "500");
-        System.setProperty("wdm.retryCount", "3");
-        System.setProperty("wdm.chromeDownloadUrl", "https://npmmirror.com/mirrors/chromedriver/");
-    }
+    //    static {
+    private static final int DEFAULT_WIDTH = 1600;
+    private static final int DEFAULT_HEIGHT = 900;
+//        webDriver = initChromeDriver(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+//    }
 
     @PreDestroy
     public void destroy() {
@@ -50,8 +49,24 @@ public class WebScreenshotUtils {
      */
     private static WebDriver initChromeDriver(int width, int height) {
         try {
+//            System.setProperty("wdm.timeout", "500");
+//            System.setProperty("wdm.retryCount", "3");
+//            System.setProperty("wdm.chromeDownloadUrl", "https://npmmirror.com/mirrors/chromedriver/");
             // 自动管理 ChromeDriver
-            WebDriverManager.chromedriver().useMirror().setup();
+//            WebDriverManager.chromedriver()
+//                    .driverVersion("145.0.7632.160")  // 这里写死一个可用版本
+//                    .useMirror()                     // 仍然用国内镜像
+//                    .setup();
+
+            // 检查 ChromeDriver 文件是否存在
+            File driverFile = new File(CHROME_DRIVER_PATH);
+            if (!driverFile.exists()) {
+                throw new BusinessException(ErrorCode.SYSTEM_ERROR,
+                        "ChromeDriver 未找到，请确保文件存在于: " + CHROME_DRIVER_PATH);
+            }
+
+            // 设置本地 ChromeDriver 路径
+            System.setProperty("webdriver.chrome.driver", CHROME_DRIVER_PATH);
             // 配置 Chrome 选项
             ChromeOptions options = new ChromeOptions();
             // 无头模式
@@ -143,6 +158,8 @@ public class WebScreenshotUtils {
             return null;
         }
         try {
+            // 每次调用创建新的 WebDriver 实例
+            webDriver = initChromeDriver(DEFAULT_WIDTH, DEFAULT_HEIGHT);
             // 创建临时目录
             String rootPath = System.getProperty("user.dir") + File.separator + "tmp" + File.separator + "screenshots"
                     + File.separator + UUID.randomUUID().toString().substring(0, 8);

@@ -244,14 +244,14 @@
             </div>
             <div class="featured-info">
               <div class="user-avatar">
-                <img v-if="app.user?.userAvatar" :src="app.user.userAvatar" :alt="app.user?.userName" />
+                <img v-if="app.userVO?.userAvatar" :src="app.userVO.userAvatar" :alt="app.userVO?.userName" />
                 <div v-else class="avatar-placeholder">
-                  <span>{{ (app.user?.userName || 'NoCode 官方').charAt(0) }}</span>
+                  <span>{{ (app.userVO?.userName || 'NoCode 官方').charAt(0) }}</span>
                 </div>
               </div>
               <div class="app-details">
                 <h3 class="app-title">{{ app.appName || '未命名应用' }}</h3>
-                <p class="user-name">{{ app.user?.userName || 'NoCode 官方' }}</p>
+                <p class="user-name">{{ app.userVO?.userName || 'NoCode 官方' }}</p>
               </div>
             </div>
           </div>
