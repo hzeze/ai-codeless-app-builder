@@ -174,6 +174,49 @@ public class UserController {
     }
 
     /**
+     * 更新当前登录用户的个人信息（昵称、头像、简介）
+     *
+     * @param userUpdateRequest 更新请求
+     * @param request           请求
+     * @return 是否成功
+     */
+    @PostMapping("/update/my")
+    public BaseResponse<Boolean> updateMyUser(@RequestBody UserUpdateRequest userUpdateRequest,
+                                              HttpServletRequest request) {
+        ThrowUtils.throwIf(userUpdateRequest == null, ErrorCode.PARAMS_ERROR);
+        // 获取当前登录用户
+        User loginUser = userService.getLoginUser(request);
+        // 只允许更新昵称、头像、简介
+        User updateUser = new User();
+        updateUser.setId(loginUser.getId());
+        if (userUpdateRequest.getUserName() != null) {
+            updateUser.setUserName(userUpdateRequest.getUserName());
+        }
+        if (userUpdateRequest.getUserAvatar() != null) {
+            String userAvatar = userUpdateRequest.getUserAvatar();
+            // 判断是否为 base64 格式
+            if (userAvatar.startsWith("data:image/")) {
+                // 将 base64 转换为文件并上传到 COS
+                String cosUrl = userService.uploadBase64AvatarToCos(userAvatar, loginUser.getId());
+                if (cosUrl != null) {
+                    updateUser.setUserAvatar(cosUrl);
+                } else {
+                    throw new BusinessException(ErrorCode.OPERATION_ERROR, "头像上传失败");
+                }
+            } else {
+                // 直接使用 URL
+                updateUser.setUserAvatar(userAvatar);
+            }
+        }
+        if (userUpdateRequest.getUserProfile() != null) {
+            updateUser.setUserProfile(userUpdateRequest.getUserProfile());
+        }
+        boolean result = userService.updateById(updateUser);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(true);
+    }
+
+    /**
      * 分页获取用户封装列表（仅管理员）
      *
      * @param userQueryRequest 查询请求参数

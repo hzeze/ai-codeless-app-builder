@@ -70,8 +70,10 @@ const selectedKeys = computed(() => {
     return ['userManage']
   } else if (path === '/admin/appManage') {
     return ['appManage']
+  } else if (path === '/user/profile') {
+    return [] // 个人中心页面不选中任何菜单项
   }
-  return ['home'] // 默认选中首页
+  return [] // 其他页面不选中
 })
 
 // 菜单配置
@@ -107,8 +109,7 @@ const isLoggedIn = computed(() => {
 const userMenuItems = computed<MenuProps['items']>(() => [
   {
     key: 'profile',
-    label: '个人资料',
-    disabled: true, // 暂时禁用
+    label: '个人中心',
   },
   {
     key: 'logout',
@@ -149,8 +150,7 @@ const handleUserMenuClick = async (menuInfo: { key: string }) => {
   if (key === 'logout') {
     await handleLogout()
   } else if (key === 'profile') {
-    // TODO: 跳转到个人资料页面
-    message.info('个人资料功能开发中')
+    router.push('/user/profile')
   }
 }
 
@@ -179,10 +179,13 @@ const handleLogout = async () => {
 
 // 组件挂载时获取登录用户信息
 onMounted(async () => {
+  // 先从本地存储加载用户信息
+  loginUserStore.loadFromLocalStorage()
+  
   // 在认证页面不获取用户信息，避免重复请求
   const isAuthPage = route.path === '/user/login' || route.path === '/user/register'
 
-  // 如果当前显示为未登录状态，且不是认证页面，尝试获取用户信息
+  // 如果当前显示为未登录状态，且不是认证页面，尝试从后端获取用户信息
   if (loginUserStore.loginUser.userName === '未登录' && !isAuthPage) {
     await loginUserStore.fetchLoginUser()
   }

@@ -90,4 +90,13 @@ public interface UserService extends IService<User> {
      */
     QueryWrapper getQueryWrapper(UserQueryRequest userQueryRequest);
 
+    /**
+     * 将 base64 格式的头像上传到 COS
+     *
+     * @param base64Data base64 数据（包含 data:image/xxx;base64, 前缀）
+     * @param userId     用户 ID
+     * @return COS 访问 URL，失败返回 null
+     */
+    String uploadBase64AvatarToCos(String base64Data, Long userId);
+
 }

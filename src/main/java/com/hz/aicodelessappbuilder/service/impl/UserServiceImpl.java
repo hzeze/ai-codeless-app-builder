@@ -2,9 +2,12 @@ package com.hz.aicodelessappbuilder.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import com.hz.aicodelessappbuilder.exception.BusinessException;
 import com.hz.aicodelessappbuilder.exception.ErrorCode;
+import com.hz.aicodelessappbuilder.manager.CosManager;
 import com.hz.aicodelessappbuilder.model.dto.user.UserQueryRequest;
 import com.hz.aicodelessappbuilder.model.enums.UserRoleEnum;
 import com.hz.aicodelessappbuilder.model.vo.LoginUserVO;
@@ -14,11 +17,18 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.hz.aicodelessappbuilder.model.entity.User;
 import com.hz.aicodelessappbuilder.mapper.UserMapper;
 import com.hz.aicodelessappbuilder.service.UserService;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +40,11 @@ import static com.hz.aicodelessappbuilder.constant.UserConstant.USER_LOGIN_STATE
  * @author <a href="https://github.com/hzeze">阿泽</a>
  */
 @Service
+@Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    @Resource
+    private CosManager cosManager;
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
@@ -169,5 +183,54 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .orderBy(sortField, "ascend".equals(sortOrder));
     }
 
+    @Override
+    public String uploadBase64AvatarToCos(String base64Data, Long userId) {
+        try {
+            // 解析 base64 数据
+            String[] parts = base64Data.split(",");
+            if (parts.length != 2) {
+                log.error("base64 数据格式错误");
+                return null;
+            }
+            String base64String = parts[1];
+            String mimeType = parts[0].substring(parts[0].indexOf(":") + 1, parts[0].indexOf(";"));
+            
+            // 确定文件扩展名
+            String extension = "jpg";
+            if (mimeType.contains("png")) {
+                extension = "png";
+            } else if (mimeType.contains("gif")) {
+                extension = "gif";
+            } else if (mimeType.contains("webp")) {
+                extension = "webp";
+            }
+            
+            // 解码 base64
+            byte[] imageBytes = Base64.getDecoder().decode(base64String);
+            
+            // 创建临时文件
+            String tempFileName = UUID.randomUUID().toString().substring(0, 8) + "_avatar." + extension;
+            Path tempDir = Files.createTempDirectory("avatar_upload_");
+            Path tempFile = tempDir.resolve(tempFileName);
+            Files.write(tempFile, imageBytes);
+            
+            try {
+                // 生成 COS 对象键
+                String datePath = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+                String cosKey = String.format("/avatars/%s/%s_%s.%s", datePath, userId, UUID.randomUUID().toString().substring(0, 8), extension);
+                
+                // 上传到 COS
+                String cosUrl = cosManager.uploadFile(cosKey, tempFile.toFile());
+                log.info("头像上传COS成功: userId={}, cosUrl={}", userId, cosUrl);
+                return cosUrl;
+            } finally {
+                // 清理临时文件
+                FileUtil.del(tempDir.toFile());
+            }
+        } catch (Exception e) {
+            log.error("上传头像到COS失败: userId={}, error={}", userId, e.getMessage(), e);
+            return null;
+        }
+    }
 
 }
