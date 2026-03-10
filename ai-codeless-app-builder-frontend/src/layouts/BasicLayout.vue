@@ -9,11 +9,6 @@
     <a-layout-content class="layout-content" :style="{ height: contentHeight }">
       <RouterView />
     </a-layout-content>
-
-    <!-- 底部版权信息 - 登录和注册页面不显示 -->
-    <a-layout-footer v-if="!isAuthPage" class="layout-footer">
-      <GlobalFooter />
-    </a-layout-footer>
   </a-layout>
 </template>
 
@@ -22,7 +17,6 @@ import { RouterView } from 'vue-router'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import GlobalHeader from '@/components/GlobalHeader.vue'
-import GlobalFooter from '@/components/GlobalFooter.vue'
 
 const route = useRoute()
 
@@ -56,13 +50,6 @@ const contentHeight = computed(() => {
   padding: 0; /* 移除内边距，由页面自己控制 */
   background: #fff;
   overflow: auto;
-}
-
-.layout-footer {
-  background: #fff;
-  padding: 0;
-  text-align: center;
-  border-top: 1px solid #f0f0f0;
 }
 
 /* 响应式设计 */

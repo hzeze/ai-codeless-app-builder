@@ -4,7 +4,7 @@
       <!-- 左侧：logo 和网站标题 -->
       <div class="header-left">
         <img src="@/assets/logo.svg" alt="logo" class="logo" @click="handleLogoClick" />
-        <span class="site-title">AI零代码应用生成平台</span>
+        <span class="site-title">梦谱</span>
       </div>
 
       <!-- 中间：菜单 -->
@@ -181,7 +181,7 @@ const handleLogout = async () => {
 onMounted(async () => {
   // 先从本地存储加载用户信息
   loginUserStore.loadFromLocalStorage()
-  
+
   // 在认证页面不获取用户信息，避免重复请求
   const isAuthPage = route.path === '/user/login' || route.path === '/user/register'
 
@@ -219,6 +219,7 @@ onMounted(async () => {
     order: 1;
     flex: 0 0 auto;
     margin-right: 8px;
+    margin-left: -12px;
   }
 
   .header-center {
@@ -226,12 +227,14 @@ onMounted(async () => {
     flex: 1;
     min-width: 0;
     margin: 8px 0;
+    margin-left: 0;
   }
 
   .header-right {
     order: 3;
     flex: 0 0 auto;
     margin-left: 8px;
+    margin-right: -12px;
   }
 
   .header-menu {
@@ -248,24 +251,27 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   cursor: pointer;
+  margin-left: -100px;
 }
 
 .logo {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   margin-right: 12px;
 }
 
 .site-title {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 600;
-  color: #1890ff;
+  color: #000;
+  font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .header-center {
   flex: 1;
   display: flex;
   justify-content: center;
+  margin-left: 80px;
 }
 
 .header-menu {
@@ -284,6 +290,7 @@ onMounted(async () => {
 .header-right {
   display: flex;
   align-items: center;
+  margin-right: -100px;
 }
 
 .user-info {

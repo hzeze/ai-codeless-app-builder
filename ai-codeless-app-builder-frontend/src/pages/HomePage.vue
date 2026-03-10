@@ -153,7 +153,7 @@
     <div id="homePage">
       <!-- 网站标题和描述 -->
       <div class="hero-section">
-        <h1 class="hero-title">一句话 <span class="highlight">🤖</span> 呈所想</h1>
+        <h1 class="hero-title">一句话 呈所想</h1>
         <p class="hero-description">与 AI 对话轻松创建应用和网站</p>
       </div>
 
@@ -164,22 +164,13 @@
           placeholder="使用 AI 创建一个高效的小工具，帮我计算......"
           :rows="4"
           :maxlength="1000"
-          show-count
           class="prompt-input"
         />
-        <div class="input-actions">
-          <a-button type="text" size="small" @click="optimizePrompt">
-            <template #icon>
-              <span>✨</span>
-            </template>
-            优化
-          </a-button>
-          <a-button type="primary" size="large" @click="createApp" :loading="creating">
-            <template #icon>
-              <span>↑</span>
-            </template>
-          </a-button>
-        </div>
+        <a-button type="primary" shape="circle" size="large" class="submit-button" @click="createApp" :loading="creating">
+          <template #icon>
+            <span>↑</span>
+          </template>
+        </a-button>
       </div>
 
       <!-- 快捷按钮 -->
@@ -282,10 +273,8 @@
   .hero-section {
     text-align: center;
     padding: 60px 0 40px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
     margin-bottom: 40px;
-    color: white;
+    color: #1a1a1a;
   }
 
   .hero-title {
@@ -295,20 +284,19 @@
     line-height: 1.2;
   }
 
-  .highlight {
-    color: #ffd700;
-  }
-
   .hero-description {
     font-size: 18px;
     margin: 0;
-    opacity: 0.9;
+    color: #666;
   }
 
   /* 输入区域 */
   .input-section {
     position: relative;
     margin-bottom: 24px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .prompt-input {
@@ -317,6 +305,7 @@
     font-size: 16px;
     padding: 16px 60px 16px 16px;
     transition: all 0.3s;
+    resize: none;
   }
 
   .prompt-input:focus {
@@ -324,13 +313,10 @@
     box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
   }
 
-  .input-actions {
+  .submit-button {
     position: absolute;
     bottom: 12px;
     right: 12px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
   }
 
   /* 快捷按钮 */
@@ -354,7 +340,7 @@
   }
 
   .section-title {
-    font-size: 32px;
+    font-size: 24px;
     font-weight: 600;
     margin-bottom: 32px;
     color: #1a1a1a;

@@ -158,7 +158,7 @@ const goToLogin = () => {
   <div class="register-container">
     <a-row justify="center" align="middle" class="register-row">
       <a-col :xs="24" :sm="16" :md="12" :lg="8" :xl="6">
-        <a-card class="register-card" title="用户注册">
+        <a-card class="register-card">
           <template #title>
             <div class="register-title">
               <CheckCircleOutlined class="register-icon" />
@@ -172,32 +172,39 @@ const goToLogin = () => {
             :rules="rules"
             @finish="handleSubmit"
             class="register-form"
+            layout="vertical"
           >
             <!-- 用户名输入框 -->
-            <a-form-item name="userAccount">
+            <a-form-item name="userAccount" :required="true">
+              <template #label>
+                <span>
+                  <UserOutlined style="margin-right: 8px;" />
+                  用户名
+                </span>
+              </template>
               <a-input
                 v-model:value="formData.userAccount"
                 placeholder="请输入用户名（至少4位）"
                 size="large"
                 :disabled="loading"
               >
-                <template #prefix>
-                  <UserOutlined />
-                </template>
               </a-input>
             </a-form-item>
 
             <!-- 密码输入框 -->
-            <a-form-item name="userPassword">
+            <a-form-item name="userPassword" :required="true">
+              <template #label>
+                <span>
+                  <LockOutlined style="margin-right: 8px;" />
+                  密码
+                </span>
+              </template>
               <a-input-password
                 v-model:value="formData.userPassword"
                 placeholder="请输入密码（至少8位）"
                 size="large"
                 :disabled="loading"
               >
-                <template #prefix>
-                  <LockOutlined />
-                </template>
               </a-input-password>
 
               <!-- 密码强度提示 -->
@@ -214,16 +221,19 @@ const goToLogin = () => {
             </a-form-item>
 
             <!-- 确认密码输入框 -->
-            <a-form-item name="checkPassword">
+            <a-form-item name="checkPassword" :required="true">
+              <template #label>
+                <span>
+                  <LockOutlined style="margin-right: 8px;" />
+                  确认密码
+                </span>
+              </template>
               <a-input-password
                 v-model:value="formData.checkPassword"
-                placeholder="请确认密码"
+                placeholder="请再次输入密码"
                 size="large"
                 :disabled="loading"
               >
-                <template #prefix>
-                  <LockOutlined />
-                </template>
               </a-input-password>
             </a-form-item>
 
@@ -259,10 +269,13 @@ const goToLogin = () => {
   height: 100vh;
   padding: 24px;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .register-row {
-  height: calc(100vh - 48px);
+  width: 100%;
 }
 
 .register-card {
@@ -278,6 +291,9 @@ const goToLogin = () => {
   font-size: 20px;
   font-weight: 600;
   color: #1890ff;
+  text-align: center;
+  width: 100%;
+  margin: 0;
 }
 
 .register-icon {

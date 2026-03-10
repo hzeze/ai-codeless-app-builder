@@ -2,7 +2,7 @@
   <div class="global-footer">
     <div class="footer-content">
       <p class="copyright">
-        AI项目 by
+        梦谱 by
         <a href="" target="_blank" rel="noopener noreferrer" class="author-link"> 阿泽 </a>
       </p>
     </div>

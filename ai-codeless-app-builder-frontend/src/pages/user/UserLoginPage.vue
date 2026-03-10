@@ -80,7 +80,7 @@ const goToRegister = () => {
   <div class="login-container">
     <a-row justify="center" align="middle" class="login-row">
       <a-col :xs="24" :sm="16" :md="12" :lg="8" :xl="6">
-        <a-card class="login-card" title="用户登录">
+        <a-card class="login-card">
           <template #title>
             <div class="login-title">
               <UserOutlined class="login-icon" />
@@ -94,32 +94,39 @@ const goToRegister = () => {
             :rules="rules"
             @finish="handleSubmit"
             class="login-form"
+            layout="vertical"
           >
             <!-- 用户名输入框 -->
-            <a-form-item name="userAccount">
+            <a-form-item name="userAccount" :required="true">
+              <template #label>
+                <span>
+                  <UserOutlined style="margin-right: 8px;" />
+                  用户名
+                </span>
+              </template>
               <a-input
                 v-model:value="formData.userAccount"
                 placeholder="请输入用户名"
                 size="large"
                 :disabled="loading"
               >
-                <template #prefix>
-                  <UserOutlined />
-                </template>
               </a-input>
             </a-form-item>
 
             <!-- 密码输入框 -->
-            <a-form-item name="userPassword">
+            <a-form-item name="userPassword" :required="true">
+              <template #label>
+                <span>
+                  <LockOutlined style="margin-right: 8px;" />
+                  密码
+                </span>
+              </template>
               <a-input-password
                 v-model:value="formData.userPassword"
                 placeholder="请输入密码"
                 size="large"
                 :disabled="loading"
               >
-                <template #prefix>
-                  <LockOutlined />
-                </template>
               </a-input-password>
             </a-form-item>
 
@@ -155,10 +162,13 @@ const goToRegister = () => {
   height: 100vh;
   padding: 24px;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .login-row {
-  height: calc(100vh - 48px);
+  width: 100%;
 }
 
 .login-card {
@@ -174,6 +184,9 @@ const goToRegister = () => {
   font-size: 20px;
   font-weight: 600;
   color: #1890ff;
+  text-align: center;
+  width: 100%;
+  margin: 0;
 }
 
 .login-icon {
