@@ -53,7 +53,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         if (userAccount.length() < 4 || userPassword.length() < 8) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号或密码格式错误");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户名或密码格式错误");
+        }
+        // 校验用户名只能包含字母、数字和下划线
+        if (!userAccount.matches("^[a-zA-Z0-9_]+$")) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户名只能包含字母、数字和下划线");
         }
         if (!userPassword.equals(checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次密码不一致");
@@ -74,7 +78,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User user = new User();
         user.setUserAccount(userAccount);
         user.setUserPassword(encryptPassword);
-        user.setUserName("用户" + userAccount.substring(0, 3));
+        user.setUserName("用户" + userAccount);
         user.setUserRole(UserRoleEnum.USER.getValue());
         boolean save = this.save(user);
         if (!save) {

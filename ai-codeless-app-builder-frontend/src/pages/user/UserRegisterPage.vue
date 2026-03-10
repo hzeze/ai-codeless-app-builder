@@ -28,7 +28,12 @@ const formData = reactive({
 const rules = {
   userAccount: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 4, message: '用户名长度不能少于4位', trigger: 'blur' }
+    { min: 4, message: '用户名长度不能少于4位', trigger: 'blur' },
+    {
+      pattern: /^[a-zA-Z0-9_]+$/,
+      message: '用户名只能包含字母、数字和下划线',
+      trigger: 'blur'
+    }
   ],
   userPassword: [
     { required: true, message: '请输入密码', trigger: 'blur' },
