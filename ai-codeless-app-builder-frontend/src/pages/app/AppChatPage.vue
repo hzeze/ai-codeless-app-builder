@@ -48,13 +48,10 @@
           <div v-for="(message, index) in messages" :key="index" class="message-item">
             <div v-if="message.type === 'user'" class="user-message">
               <div class="message-content">{{ message.content }}</div>
-              <div class="message-avatar">
-                <a-avatar :src="loginUserStore.loginUser.userAvatar" />
-              </div>
             </div>
             <div v-else class="ai-message">
               <div class="message-avatar">
-                <a-avatar style="background-color: #1890ff">AI</a-avatar>
+                <img src="@/assets/logo.svg" alt="AI" class="ai-logo" />
               </div>
               <div class="message-content">
                 <div v-if="message.content" class="message-text">
@@ -854,7 +851,7 @@ onUnmounted(() => {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f5f5f5;
+  background: transparent;
 }
 
 /* 顶部栏 */
@@ -971,6 +968,13 @@ onUnmounted(() => {
 
 .message-avatar {
   flex-shrink: 0;
+}
+
+.ai-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: contain;
 }
 
 .loading-indicator {

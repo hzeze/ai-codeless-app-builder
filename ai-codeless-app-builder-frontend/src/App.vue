@@ -21,5 +21,6 @@ html, body {
 
 #app {
   height: 100%;
+  background: linear-gradient(135deg, #ffffff 0%, #b3d4ff 50%, #ffffff 100%);
 }
 </style>

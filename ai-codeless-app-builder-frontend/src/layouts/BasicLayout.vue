@@ -35,6 +35,7 @@ const contentHeight = computed(() => {
 .basic-layout {
   height: 100vh;
   overflow: hidden;
+  background: transparent;
 }
 
 .layout-header {
@@ -42,13 +43,12 @@ const contentHeight = computed(() => {
   padding: 0;
   height: 64px;
   line-height: 64px;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 }
 
 .layout-content {
   flex: 1;
   padding: 0; /* 移除内边距，由页面自己控制 */
-  background: #fff;
+  background: transparent;
   overflow: auto;
 }
 

@@ -2,6 +2,7 @@
   import { ref, reactive, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import { message } from 'ant-design-vue'
+  import { SendOutlined } from '@ant-design/icons-vue'
   import { useLoginUserStore } from '@/stores/loginUser'
   import { addApp, listMyAppVoByPage, listGoodAppVoByPage } from '@/api/appController'
   import { getAppDeployUrl } from '@/config/env.ts'
@@ -153,8 +154,8 @@
     <div id="homePage">
       <!-- 网站标题和描述 -->
       <div class="hero-section">
-        <h1 class="hero-title">一句话 呈所想</h1>
-        <p class="hero-description">与 AI 对话轻松创建应用和网站</p>
+        <h1 class="hero-title">让想法，瞬间有‘谱’</h1>
+        <p class="hero-description">和 AI 聊聊想法，网站自动生成</p>
       </div>
 
       <!-- 用户提示词输入框 -->
@@ -166,9 +167,9 @@
           :maxlength="1000"
           class="prompt-input"
         />
-        <a-button type="primary" shape="circle" size="large" class="submit-button" @click="createApp" :loading="creating">
+        <a-button type="primary" size="large" class="submit-button" @click="createApp" :loading="creating">
           <template #icon>
-            <span>↑</span>
+            <SendOutlined />
           </template>
         </a-button>
       </div>
@@ -267,6 +268,7 @@
     margin: 0 auto;
     padding: 20px;
     min-height: calc(100vh - 128px);
+    background: transparent;
   }
 
   /* 英雄区域 */

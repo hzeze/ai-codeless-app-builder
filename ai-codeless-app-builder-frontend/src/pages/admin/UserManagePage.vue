@@ -212,7 +212,7 @@ onMounted(() => {
 <style scoped>
 .user-manage-page {
   padding: 24px;
-  background: #fff;
+  background: transparent;
   height: 100%;
   overflow-y: auto; /* 允许垂直滚动，但隐藏滚动条 */
   scrollbar-width: none; /* Firefox */

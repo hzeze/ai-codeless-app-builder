@@ -1,42 +1,45 @@
 <template>
   <div id="appManagePage">
     <!-- 搜索表单 -->
-    <a-form layout="inline" :model="searchParams" @finish="doSearch">
-      <a-form-item label="应用名称">
-        <a-input v-model:value="searchParams.appName" placeholder="输入应用名称" />
-      </a-form-item>
-      <a-form-item label="创建者">
-        <a-input v-model:value="searchParams.userId" placeholder="输入用户ID" />
-      </a-form-item>
-      <a-form-item label="生成类型">
-        <a-select
-          v-model:value="searchParams.codeGenType"
-          placeholder="选择生成类型"
-          style="width: 150px"
-        >
-          <a-select-option
-            v-for="option in CODE_GEN_TYPE_OPTIONS"
-            :key="option.value"
-            :value="option.value"
+    <div class="search-section">
+      <a-form layout="inline" :model="searchParams" @finish="doSearch">
+        <a-form-item label="应用名称">
+          <a-input v-model:value="searchParams.appName" placeholder="输入应用名称" />
+        </a-form-item>
+        <a-form-item label="创建者">
+          <a-input v-model:value="searchParams.userId" placeholder="输入用户ID" />
+        </a-form-item>
+        <a-form-item label="生成类型">
+          <a-select
+            v-model:value="searchParams.codeGenType"
+            placeholder="选择生成类型"
+            style="width: 150px"
           >
-            {{ option.label }}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item>
-        <a-button type="primary" html-type="submit">搜索</a-button>
-      </a-form-item>
-    </a-form>
-    <a-divider />
+            <a-select-option
+              v-for="option in CODE_GEN_TYPE_OPTIONS"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" html-type="submit">搜索</a-button>
+          <a-button style="margin-left: 8px" @click="handleReset">重置</a-button>
+        </a-form-item>
+      </a-form>
+    </div>
 
     <!-- 表格 -->
-    <a-table
-      :columns="columns"
-      :data-source="data"
-      :pagination="pagination"
-      @change="doTableChange"
-      :scroll="{ x: 1200 }"
-    >
+    <div class="table-section">
+      <a-table
+        :columns="columns"
+        :data-source="data"
+        :pagination="pagination"
+        @change="doTableChange"
+        :scroll="{ x: 1200 }"
+      >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'cover'">
           <a-image v-if="record.cover" :src="record.cover" :width="80" :height="60" />
@@ -84,6 +87,7 @@
         </template>
       </template>
     </a-table>
+    </div>
   </div>
 </template>
 
@@ -211,6 +215,15 @@ const doSearch = () => {
   fetchData()
 }
 
+// 重置搜索
+const handleReset = () => {
+  searchParams.appName = ''
+  searchParams.userId = ''
+  searchParams.codeGenType = undefined
+  searchParams.pageNum = 1
+  fetchData()
+}
+
 // 编辑应用
 const editApp = (app: API.AppVO) => {
   router.push(`/app/edit/${app.id}`)
@@ -264,8 +277,21 @@ const deleteApp = async (id: number | undefined) => {
 <style scoped>
 #appManagePage {
   padding: 24px;
-  background: white;
+  background: transparent;
   margin-top: 16px;
+}
+
+.search-section {
+  margin-bottom: 24px;
+  padding: 24px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.table-section {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .no-cover {
