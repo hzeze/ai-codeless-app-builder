@@ -219,7 +219,7 @@ onMounted(async () => {
     order: 1;
     flex: 0 0 auto;
     margin-right: 8px;
-    margin-left: -12px;
+    margin-left: 0;
   }
 
   .header-center {
@@ -234,7 +234,7 @@ onMounted(async () => {
     order: 3;
     flex: 0 0 auto;
     margin-left: 8px;
-    margin-right: -12px;
+    margin-right: 0;
   }
 
   .header-menu {
@@ -243,7 +243,12 @@ onMounted(async () => {
   }
 
   .site-title {
-    font-size: 12px; /* 进一步缩小标题 */
+    font-size: 16px; /* 移动端标题大小 */
+  }
+
+  .logo {
+    width: 32px;
+    height: 32px;
   }
 }
 
@@ -251,7 +256,6 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-left: -100px;
 }
 
 .logo {
@@ -271,7 +275,7 @@ onMounted(async () => {
   flex: 1;
   display: flex;
   justify-content: center;
-  margin-left: 80px;
+  margin-left: 120px;
 }
 
 .header-menu {
@@ -290,7 +294,6 @@ onMounted(async () => {
 .header-right {
   display: flex;
   align-items: center;
-  margin-right: -100px;
 }
 
 .user-info {
