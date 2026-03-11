@@ -106,7 +106,7 @@ const goToRegister = () => {
               </template>
               <a-input
                 v-model:value="formData.userAccount"
-                placeholder="请输入用户名"
+                placeholder="管理员用户名：admin"
                 size="large"
                 :disabled="loading"
               >
@@ -123,7 +123,7 @@ const goToRegister = () => {
               </template>
               <a-input-password
                 v-model:value="formData.userPassword"
-                placeholder="请输入密码"
+                placeholder="管理员密码：12345678"
                 size="large"
                 :disabled="loading"
               >

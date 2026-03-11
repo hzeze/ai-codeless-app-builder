@@ -7,7 +7,7 @@ import com.hz.aicodelessappbuilder.exception.ErrorCode;
 import com.hz.aicodelessappbuilder.exception.ThrowUtils;
 import com.hz.aicodelessappbuilder.manager.CosManager;
 import com.hz.aicodelessappbuilder.service.ScreenshotService;
-import com.hz.aicodelessappbuilder.utils.WebScreenshotUtils;
+import com.hz.aicodelessappbuilder.utils.ApiScreenshotUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,13 +23,16 @@ public class ScreenshotServiceImpl implements ScreenshotService {
     @Resource
     private CosManager cosManager;
 
+    @Resource
+    private ApiScreenshotUtils apiScreenshotUtils;
+
     @Override
     public String generateAndUploadScreenshot(String webUrl) {
         ThrowUtils.throwIf(StrUtil.isBlank(webUrl), ErrorCode.PARAMS_ERROR, "网页URL不能为空");
         log.info("开始生成网页截图，URL: {}", webUrl);
-        // 1. 生成本地截图
-        String localScreenshotPath = WebScreenshotUtils.saveWebPageScreenshot(webUrl);
-        ThrowUtils.throwIf(StrUtil.isBlank(localScreenshotPath), ErrorCode.OPERATION_ERROR, "本地截图生成失败");
+        // 1. 使用API生成截图
+        String localScreenshotPath = apiScreenshotUtils.saveWebPageScreenshot(webUrl);
+        ThrowUtils.throwIf(StrUtil.isBlank(localScreenshotPath), ErrorCode.OPERATION_ERROR, "截图生成失败");
         try {
             // 2. 上传到对象存储
             String cosUrl = uploadScreenshotToCos(localScreenshotPath);

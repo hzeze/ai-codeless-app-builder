@@ -3,6 +3,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import type { TableColumnsType } from 'ant-design-vue'
 import { listUserVoByPage, deleteUser } from '@/api/userController'
+import { formatTime } from '@/utils/time'
 
 // 表格数据
 const tableData = ref<API.UserVO[]>([])
@@ -181,7 +182,7 @@ onMounted(() => {
           total: total,
           showSizeChanger: true,
           showQuickJumper: true,
-          showTotal: (total: number, range: [number, number]) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+          showTotal: (total: number) => `共 ${total} 条`,
           onChange: handlePageChange,
           onShowSizeChange: handlePageChange,
         }"
@@ -191,7 +192,10 @@ onMounted(() => {
       >
         <!-- 操作列 -->
         <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'action'">
+          <template v-if="column.key === 'createTime'">
+            {{ formatTime(record.createTime) }}
+          </template>
+          <template v-else-if="column.key === 'action'">
             <a-popconfirm
               title="确定要删除这个用户吗？"
               ok-text="确定"

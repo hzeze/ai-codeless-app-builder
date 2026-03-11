@@ -6,9 +6,6 @@
         <a-form-item label="应用名称">
           <a-input v-model:value="searchParams.appName" placeholder="输入应用名称" />
         </a-form-item>
-        <a-form-item label="创建者">
-          <a-input v-model:value="searchParams.userId" placeholder="输入用户ID" />
-        </a-form-item>
         <a-form-item label="生成类型">
           <a-select
             v-model:value="searchParams.codeGenType"
@@ -65,9 +62,6 @@
         </template>
         <template v-else-if="column.dataIndex === 'createTime'">
           {{ formatTime(record.createTime) }}
-        </template>
-        <template v-else-if="column.dataIndex === 'user'">
-          <UserInfo :user="record.user" size="small" />
         </template>
         <template v-else-if="column.key === 'action'">
           <a-space>
@@ -138,16 +132,13 @@ const columns = [
     title: '部署时间',
     dataIndex: 'deployedTime',
     width: 160,
-  },
-  {
-    title: '创建者',
-    dataIndex: 'user',
-    width: 120,
+    sorter: true,
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
     width: 160,
+    sorter: true,
   },
   {
     title: '操作',
@@ -218,7 +209,6 @@ const doSearch = () => {
 // 重置搜索
 const handleReset = () => {
   searchParams.appName = ''
-  searchParams.userId = ''
   searchParams.codeGenType = undefined
   searchParams.pageNum = 1
   fetchData()
