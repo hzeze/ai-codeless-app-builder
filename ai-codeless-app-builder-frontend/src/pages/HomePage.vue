@@ -125,6 +125,10 @@
 
   // 查看应用
   const viewApp = (appId: number | undefined) => {
+    if (!loginUserStore.loginUser.id) {
+      message.warning('请先登录')
+      return
+    }
     if (appId) {
       router.push(`/app/chat/${appId}?view=1`)
     }
