@@ -50,14 +50,8 @@ const handleSubmit = async () => {
       // 更新登录用户信息
       loginUserStore.setLoginUser(response.data.data)
 
-      // 根据用户角色跳转
-      if (response.data.data.userRole === 'admin') {
-        // 管理员跳转到用户管理页面
-        router.push('/admin/userManage')
-      } else {
-        // 普通用户跳转到主页
-        router.push('/')
-      }
+      // 登录成功后统一跳转到首页
+      router.push('/')
     } else {
       // 登录失败
       message.error(response.data.message || '登录失败，请重试')
