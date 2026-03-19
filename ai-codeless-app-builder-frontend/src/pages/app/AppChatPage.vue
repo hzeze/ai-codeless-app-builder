@@ -12,19 +12,35 @@
         <a-tag class="gen-type-tag" color="blue">{{ formatCodeGenType(appInfo?.codeGenType) }}</a-tag>
       </div>
       <div class="header-right">
-        <a-button type="default" @click="showAppDetail">
+        <a-button
+          type="default"
+          class="action-btn"
+          @click="showAppDetail"
+          :disabled="isGenerating"
+        >
           <template #icon>
             <InfoCircleOutlined />
           </template>
           应用详情
         </a-button>
-        <a-button type="default" @click="downloadCode" :loading="downloading">
+        <a-button
+          type="default"
+          class="action-btn"
+          @click="downloadCode"
+          :loading="downloading"
+          :disabled="isGenerating"
+        >
           <template #icon>
             <DownloadOutlined />
           </template>
           下载代码
         </a-button>
-        <a-button type="primary" @click="deployApp" :loading="deploying">
+        <a-button
+          type="primary"
+          @click="deployApp"
+          :loading="deploying"
+          :disabled="isGenerating"
+        >
           <template #icon>
             <CloudUploadOutlined />
           </template>
@@ -386,7 +402,6 @@ const loadChatHistory = async (loadMore = false) => {
       }
 
       await nextTick()
-      scrollToBottom()
     }
   } catch (error) {
     console.error('加载历史消息失败：', error)
@@ -447,7 +462,6 @@ const sendInitialMessage = async (prompt: string) => {
   })
 
   await nextTick()
-  scrollToBottom()
 
   // 开始生成
   isGenerating.value = true
@@ -486,7 +500,6 @@ const sendMessage = async () => {
   })
 
   await nextTick()
-  scrollToBottom()
 
   // 开始生成
   isGenerating.value = true
@@ -536,7 +549,6 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
           fullContent += content
           messages.value[aiMessageIndex].content = fullContent
           messages.value[aiMessageIndex].loading = false
-          scrollToBottom()
         }
       } catch (error) {
         console.error('解析消息失败:', error)
@@ -626,16 +638,9 @@ const updatePreview = () => {
   }
 }
 
-// 滚动到底部
-const scrollToBottom = () => {
-  if (messagesContainer.value) {
-    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
-  }
-}
-
-// 返回上一页
+// 返回首页
 const goBack = () => {
-  router.back()
+  router.push('/')
 }
 
 // 部署应用
@@ -888,6 +893,22 @@ onUnmounted(() => {
 .header-right {
   display: flex;
   gap: 12px;
+}
+
+.action-btn {
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.action-btn:hover:not(:disabled) {
+  border-color: #1890ff;
+  color: #1890ff;
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* 主要内容区域 */
