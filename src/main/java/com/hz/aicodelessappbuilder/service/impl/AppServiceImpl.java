@@ -317,7 +317,14 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         String generatedAppName = aiAppNameGeneratorService.generateAppName(initPrompt);
         app.setAppName(generatedAppName);
         // 使用 AI 智能选择代码生成类型
-        CodeGenTypeEnum selectedCodeGenType = aiCodeGenTypeRoutingService.routeCodeGenType(initPrompt);
+        String codeGenTypeResult = aiCodeGenTypeRoutingService.routeCodeGenType(initPrompt);
+        CodeGenTypeEnum selectedCodeGenType;
+        try {
+            selectedCodeGenType = CodeGenTypeEnum.valueOf(codeGenTypeResult.trim());
+        } catch (IllegalArgumentException e) {
+            // 如果 AI 返回了提示信息而非枚举值，默认使用 HTML 类型
+            selectedCodeGenType = CodeGenTypeEnum.HTML;
+        }
         app.setCodeGenType(selectedCodeGenType.getValue());
         // 插入数据库
         boolean result = this.save(app);
