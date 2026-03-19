@@ -1,0 +1,99 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ai-codeless-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ai_codeless_app_builder
+      TZ: Asia/Shanghai
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql/create_table.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ai-codeless-network
+
+  redis:
+    image: redis:latest
+    container_name: ai-codeless-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-123456}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-123456}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ai-codeless-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai-codeless-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ai_codeless_app_builder?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-123456}
+      LANGCHAIN4J_OPEN_AI_CHAT_MODEL_API_KEY: ${OPENAI_API_KEY:-}
+      LANGCHAIN4J_OPEN_AI_CHAT_MODEL_BASE_URL: ${OPENAI_BASE_URL:-https://api.deepseek.com}
+      LANGCHAIN4J_OPEN_AI_CHAT_MODEL_MODEL_NAME: ${OPENAI_MODEL_NAME:-deepseek-chat}
+      LANGCHAIN4J_OPEN_AI_STREAMING_CHAT_MODEL_API_KEY: ${OPENAI_API_KEY:-}
+      LANGCHAIN4J_OPEN_AI_STREAMING_CHAT_MODEL_BASE_URL: ${OPENAI_BASE_URL:-https://api.deepseek.com}
+      LANGCHAIN4J_OPEN_AI_STREAMING_CHAT_MODEL_MODEL_NAME: ${OPENAI_MODEL_NAME:-deepseek-chat}
+      COS_CLIENT_HOST: ${COS_HOST:-}
+      COS_CLIENT_SECRETID: ${COS_SECRET_ID:-}
+      COS_CLIENT_SECRETKEY: ${COS_SECRET_KEY:-}
+      COS_CLIENT_REGION: ${COS_REGION:-}
+      COS_CLIENT_BUCKET: ${COS_BUCKET:-}
+      SCREENSHOT_API_URL: ${SCREENSHOT_API_URL:-}
+      SCREENSHOT_API_KEY: ${SCREENSHOT_API_KEY:-}
+      SCREENSHOT_WIDTH: ${SCREENSHOT_WIDTH:-1920}
+      CODE_DEPLOY_HOST: ${CODE_DEPLOY_HOST:-http://localhost}
+    ports:
+      - "8123:8123"
+    networks:
+      - ai-codeless-network
+
+  frontend:
+    build:
+      context: ./ai-codeless-app-builder-frontend
+      dockerfile: Dockerfile
+    container_name: ai-codeless-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - ai-codeless-network
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  ai-codeless-network:
+    driver: bridge

@@ -1,6 +1,9 @@
 ### CUSTOM ###
 application-local.yml
 application-prod.yml
+.env
+.env.local
+.env.*.local
 tmp/
 
 

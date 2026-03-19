@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: ai-codeless-app-builder-backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql:3306/ai_codeless_app_builder?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:redis}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      password: ${SPRING_DATA_REDIS_PASSWORD:123456}
+      ttl: 3600
+  session:
+    store-type: redis
+    timeout: 2592000
+
+server:
+  port: 8123
+  servlet:
+    context-path: /api
+    session:
+      cookie:
+        max-age: 2592000
+
+springdoc:
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.hz.aicodelessappbuilder.controller
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+langchain4j:
+  open-ai:
+    chat-model:
+      base-url: ${LANGCHAIN4J_OPEN_AI_CHAT_MODEL_BASE_URL:https://api.deepseek.com}
+      api-key: ${LANGCHAIN4J_OPEN_AI_CHAT_MODEL_API_KEY:}
+      model-name: ${LANGCHAIN4J_OPEN_AI_CHAT_MODEL_MODEL_NAME:deepseek-chat}
+      log-requests: true
+      log-responses: true
+    streaming-chat-model:
+      base-url: ${LANGCHAIN4J_OPEN_AI_STREAMING_CHAT_MODEL_BASE_URL:https://api.deepseek.com}
+      api-key: ${LANGCHAIN4J_OPEN_AI_STREAMING_CHAT_MODEL_API_KEY:}
+      model-name: ${LANGCHAIN4J_OPEN_AI_STREAMING_CHAT_MODEL_MODEL_NAME:deepseek-chat}
+      max-tokens: 8192
+      log-requests: true
+      log-responses: true
+
+cos:
+  client:
+    host: ${COS_CLIENT_HOST:}
+    secretId: ${COS_CLIENT_SECRETID:}
+    secretKey: ${COS_CLIENT_SECRETKEY:}
+    region: ${COS_CLIENT_REGION:}
+    bucket: ${COS_CLIENT_BUCKET:}
+
+screenshot:
+  api-url: ${SCREENSHOT_API_URL:}
+  api-key: ${SCREENSHOT_API_KEY:}
+  width: ${SCREENSHOT_WIDTH:1920}
+
+code:
+  deploy-host: ${CODE_DEPLOY_HOST:http://localhost}
