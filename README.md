@@ -69,14 +69,65 @@
 
 ## 🚀 快速开始
 
-### 1. 克隆项目
+### 方式一：Docker 部署（推荐）
+
+#### 1. 克隆项目
 
 ```bash
 git clone https://github.com/hzeze/ai-codeless-app-builder.git
 cd ai-codeless-app-builder
 ```
 
-### 2. 数据库初始化
+#### 2. 配置环境变量
+
+```bash
+# 复制环境变量模板
+cp .env.example .env
+
+# 编辑 .env 文件，配置必要的环境变量
+# 必须配置：OPENAI_API_KEY
+# 可选配置：COS 相关配置、截图 API 配置等
+```
+
+#### 3. 启动服务
+
+```bash
+# 启动所有服务（MySQL、Redis、后端、前端）
+docker-compose up -d
+
+# 查看服务状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f
+```
+
+#### 4. 访问应用
+
+- **前端应用**: http://localhost
+- **后端 API**: http://localhost:8123
+- **API 文档**: http://localhost:8123/api/doc.html
+
+#### 5. 停止服务
+
+```bash
+# 停止所有服务
+docker-compose down
+
+# 停止服务并删除数据卷（慎用）
+docker-compose down -v
+```
+
+### 方式二：本地开发部署
+
+#### 1. 克隆项目
+
+```bash
+git clone https://github.com/hzeze/ai-codeless-app-builder.git
+cd ai-codeless-app-builder
+```
+
+#### 2. 数据库初始化
 
 ```bash
 # 登录 MySQL
@@ -86,7 +137,7 @@ mysql -u root -p
 source sql/create_table.sql
 ```
 
-### 3. 后端配置
+#### 3. 后端配置
 
 修改 `src/main/resources/application.yml`：
 
@@ -120,7 +171,7 @@ cos:
     bucket: your_bucket
 ```
 
-### 4. 启动后端
+#### 4. 启动后端
 
 ```bash
 # Windows
@@ -132,7 +183,7 @@ mvnw.cmd spring-boot:run
 
 后端服务将在 `http://localhost:8123` 启动
 
-### 5. 前端配置与启动
+#### 5. 前端配置与启动
 
 ```bash
 # 进入前端目录
@@ -147,7 +198,7 @@ npm run dev
 
 前端服务将在 `http://localhost:5173` 启动
 
-### 6. 访问应用
+#### 6. 访问应用
 
 打开浏览器访问 `http://localhost:5173`
 
